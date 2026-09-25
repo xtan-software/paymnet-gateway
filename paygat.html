@@ -1,0 +1,3204 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070f">
+<meta name="description" content="XTAN PAYMENT — Modern Digital Payment Interface (Xtan)">
+<title>XTAN PAYMENT — Modern Digital Payment Interface</title>
+<style>
+/* ============================================================
+   XTAN PAYMENT — STYLES
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+html{-webkit-text-size-adjust:100%}
+
+:root{
+  --bg:#05070f;
+  --bg-2:#0a0f1f;
+  --panel:rgba(255,255,255,.05);
+  --panel-2:rgba(255,255,255,.08);
+  --panel-solid:#0c1224;
+  --stroke:rgba(255,255,255,.10);
+  --stroke-2:rgba(255,255,255,.18);
+  --text:#e9eeff;
+  --muted:#8b98bd;
+  --accent:#22e0ff;
+  --accent-2:#8b5cff;
+  --accent-3:#ff4fd8;
+  --ok:#20e3a0;
+  --warn:#ffb020;
+  --err:#ff5470;
+  --shadow:0 24px 60px -24px rgba(0,0,0,.95);
+  --radius:22px;
+  --blur:18px;
+  --topbar-bg:rgba(5,7,15,.72);
+  --ripple:rgba(255,255,255,.4);
+  --rx:0deg;--ry:0deg;
+}
+html[data-theme="light"]{
+  --bg:#eaeffb;
+  --bg-2:#ffffff;
+  --panel:rgba(255,255,255,.72);
+  --panel-2:rgba(255,255,255,.92);
+  --panel-solid:#ffffff;
+  --stroke:rgba(14,22,52,.10);
+  --stroke-2:rgba(14,22,52,.18);
+  --text:#0d1428;
+  --muted:#5a6788;
+  --accent:#0093c4;
+  --accent-2:#6b3ff0;
+  --accent-3:#d92fb0;
+  --shadow:0 24px 60px -30px rgba(20,30,80,.45);
+  --topbar-bg:rgba(255,255,255,.75);
+  --ripple:rgba(20,40,90,.18);
+}
+
+body{
+  margin:0;
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeSpeed;
+  overscroll-behavior-y:none;
+  line-height:1.45;
+}
+button,input,select,textarea{font-family:inherit}
+img,canvas,svg{max-width:100%}
+::selection{background:var(--accent);color:#04070f}
+
+/* ---------- Background FX ---------- */
+.bg-fx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:
+  radial-gradient(1200px 700px at 12% -10%, rgba(34,224,255,.16), transparent 60%),
+  radial-gradient(1000px 700px at 90% 0%, rgba(139,92,255,.18), transparent 62%),
+  radial-gradient(900px 700px at 50% 120%, rgba(255,79,216,.12), transparent 60%),
+  var(--bg)}
+.orb{position:absolute;border-radius:50%;filter:blur(72px);opacity:.45;will-change:transform}
+.orb-1{width:380px;height:380px;background:#22e0ff;top:-90px;left:-70px;animation:float1 18s ease-in-out infinite}
+.orb-2{width:420px;height:420px;background:#8b5cff;top:35%;right:-140px;animation:float2 22s ease-in-out infinite}
+.orb-3{width:300px;height:300px;background:#ff4fd8;bottom:-120px;left:30%;animation:float3 26s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(40px,50px,0)}}
+@keyframes float2{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-50px,-40px,0)}}
+@keyframes float3{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(30px,-50px,0)}}
+.grid-lines{position:absolute;inset:0;opacity:.28;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%)}
+html[data-theme="light"] .grid-lines{opacity:.5;background-image:linear-gradient(rgba(20,40,90,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(20,40,90,.06) 1px,transparent 1px)}
+
+/* ---------- Layout ---------- */
+.app{display:flex;min-height:100vh;width:100%}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:266px;z-index:70;
+  display:flex;flex-direction:column;gap:6px;
+  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  border-right:1px solid var(--stroke);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+  transition:transform .34s cubic-bezier(.4,0,.2,1);
+}
+html[data-theme="light"] .sidebar{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.7))}
+.shell{flex:1;min-width:0;margin-left:266px;display:flex;flex-direction:column;width:100%}
+
+/* ---------- Brand ---------- */
+.brand{display:flex;align-items:center;gap:12px;padding:8px 10px 18px}
+.brand-mark{
+  width:44px;height:44px;border-radius:14px;flex:none;
+  display:grid;place-items:center;font-weight:900;font-size:20px;color:#04070f;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 14px 30px -14px var(--accent),inset 0 -6px 14px rgba(0,0,0,.28);
+  transform:translateZ(0);
+}
+.brand-text b{display:block;font-size:15px;letter-spacing:.06em;font-weight:800}
+.brand-text span{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.05em}
+
+/* ---------- Nav ---------- */
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.nav-item{
+  position:relative;display:flex;align-items:center;gap:12px;
+  min-height:50px;padding:0 14px;border-radius:14px;
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  font-size:14px;font-weight:600;cursor:pointer;overflow:hidden;
+  transition:background .2s,color .2s,border-color .2s,transform .18s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;width:100%;text-align:left;
+}
+.nav-item svg{width:20px;height:20px;flex:none}
+.nav-item:hover{color:var(--text);background:var(--panel)}
+.nav-item.active{
+  color:var(--text);border-color:var(--stroke-2);
+  background:linear-gradient(120deg,rgba(34,224,255,.16),rgba(139,92,255,.14));
+  box-shadow:0 12px 30px -18px var(--accent);
+}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:14%;bottom:14%;width:3px;border-radius:0 4px 4px 0;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+}
+.nav-item:active{transform:scale(.98)}
+
+.sidebar-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.sys-card{
+  border:1px solid var(--stroke);border-radius:16px;padding:12px 14px;background:var(--panel);
+  font-size:11.5px;color:var(--muted)
+}
+.sys-card b{display:block;color:var(--text);font-size:12.5px;margin-bottom:2px}
+.ver{text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+
+/* ---------- Topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
+  padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top));
+  background:var(--topbar-bg);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--stroke);
+}
+.topbar h1{font-size:15px;margin:0;font-weight:800;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-spacer{flex:1;min-width:8px}
+.pill-online{
+  display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.05em;
+  padding:7px 12px;border-radius:999px;color:var(--ok);
+  border:1px solid rgba(32,227,160,.3);background:rgba(32,227,160,.10);white-space:nowrap
+}
+.dot-live{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(32,227,160,.7);animation:pulseDot 2s infinite}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(32,227,160,.6)}70%{box-shadow:0 0 0 9px rgba(32,227,160,0)}100%{box-shadow:0 0 0 0 rgba(32,227,160,0)}}
+.icon-btn{
+  position:relative;width:46px;height:46px;flex:none;display:grid;place-items:center;
+  border-radius:14px;border:1px solid var(--stroke);background:var(--panel);color:var(--text);
+  cursor:pointer;transition:transform .16s,background .2s,border-color .2s;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn:active{transform:scale(.93)}
+.icon-btn:hover{background:var(--panel-2);border-color:var(--stroke-2)}
+.avatar{
+  width:46px;height:46px;border-radius:14px;flex:none;display:grid;place-items:center;
+  font-weight:900;font-size:14px;color:#04070f;
+  background:linear-gradient(135deg,var(--accent),var(--accent-3));
+  box-shadow:0 12px 26px -14px var(--accent-3);cursor:default
+}
+.notif-dot{
+  position:absolute;top:8px;right:8px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:999px;background:var(--err);color:#fff;font-size:10px;font-weight:800;
+  display:none;place-items:center;line-height:17px;text-align:center;box-shadow:0 0 0 2px var(--bg)
+}
+.notif-dot.show{display:grid}
+
+/* ---------- Main ---------- */
+.main{
+  width:100%;max-width:1440px;margin:0 auto;
+  padding:18px 18px calc(120px + env(safe-area-inset-bottom));
+}
+.view{display:none}
+.view.active{display:block;animation:viewIn .42s cubic-bezier(.22,1,.36,1)}
+@keyframes viewIn{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
+
+/* ---------- Cards ---------- */
+.card{
+  position:relative;border-radius:var(--radius);border:1px solid var(--stroke);
+  background:var(--panel);box-shadow:var(--shadow);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+  padding:18px;overflow:hidden;
+  transform:perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,border-color .3s;
+}
+.card::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),transparent 42%);
+  opacity:.8
+}
+html[data-theme="light"] .card::after{background:linear-gradient(180deg,rgba(255,255,255,.9),transparent 42%)}
+.card>*{position:relative;z-index:1}
+.tilt{will-change:transform}
+
+.card-title{font-size:13px;font-weight:800;letter-spacing:.09em;color:var(--muted);text-transform:uppercase;margin:0 0 2px}
+.card-sub{font-size:12px;color:var(--muted);margin:0}
+
+/* ---------- Stats ---------- */
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.stat{padding:16px}
+.stat .stat-label{font-size:10.5px;letter-spacing:.1em;font-weight:800;color:var(--muted);text-transform:uppercase}
+.stat .stat-value{font-size:clamp(18px,2.4vw,25px);font-weight:900;margin-top:8px;letter-spacing:-.02em;word-break:break-word}
+.stat .stat-foot{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px}
+.stat-glow{position:absolute;width:110px;height:110px;border-radius:50%;filter:blur(38px);opacity:.32;right:-34px;top:-40px;pointer-events:none;z-index:0}
+
+/* ---------- Payment grid ---------- */
+.pay-grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:16px;align-items:start;margin-bottom:16px}
+
+/* ---------- QR Card ---------- */
+.qr-card{padding:18px}
+.qr-card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;
+  background:linear-gradient(120deg,rgba(34,224,255,.85),rgba(139,92,255,.85),rgba(255,79,216,.75),rgba(34,224,255,.85));
+  background-size:300% 300%;animation:borderFlow 9s linear infinite;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  pointer-events:none;z-index:2;opacity:.9
+}
+@keyframes borderFlow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.qr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.qr-head h2{margin:0;font-size:16px;font-weight:900;letter-spacing:.06em}
+.qr-head p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+.qr-stage{position:relative;display:flex;justify-content:center;padding:8px 4px 14px}
+.qr-stage canvas{
+  width:100%;max-width:290px;height:auto;display:block;border-radius:16px;
+  box-shadow:0 22px 50px -24px rgba(34,224,255,.7),0 0 0 1px var(--stroke);
+  background:#fff;transition:transform .3s
+}
+.qr-scan{
+  position:absolute;left:14%;right:14%;height:3px;top:12%;border-radius:4px;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  box-shadow:0 0 20px 3px var(--accent)
+}
+.qr-stage.scanning .qr-scan{opacity:1;animation:scanY 2.8s ease-in-out infinite}
+@keyframes scanY{0%,100%{top:14%}50%{top:84%}}
+
+.qr-statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.countdown{
+  font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;letter-spacing:.04em;
+  padding:7px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--panel-2)
+}
+.progress{height:5px;border-radius:99px;background:var(--panel-2);overflow:hidden;margin-bottom:14px;border:1px solid var(--stroke)}
+.progress i{display:block;height:100%;width:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 1s linear}
+
+.qr-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+
+/* ---------- Buttons ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:46px;padding:0 15px;border-radius:14px;
+  border:1px solid var(--stroke-2);background:var(--panel-2);color:var(--text);
+  font-size:13px;font-weight:700;letter-spacing:.02em;cursor:pointer;overflow:hidden;
+  transition:transform .16s,box-shadow .22s,background .22s,border-color .22s,opacity .2s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;white-space:nowrap
+}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{background:var(--panel);border-color:var(--accent)}
+.btn:active{transform:scale(.965)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04070f;border-color:transparent;
+  box-shadow:0 16px 34px -16px var(--accent)
+}
+.btn-primary:hover{filter:brightness(1.07);border-color:transparent}
+.btn-success{background:linear-gradient(135deg,var(--ok),#0fb47c);color:#04150f;border-color:transparent;box-shadow:0 16px 34px -16px var(--ok)}
+.btn-danger{background:rgba(255,84,112,.14);color:var(--err);border-color:rgba(255,84,112,.4)}
+.btn-ghost{background:transparent}
+.btn-block{width:100%;min-height:54px;font-size:14.5px;letter-spacing:.05em}
+.btn-lg{min-height:52px}
+
+.ripple{position:absolute;border-radius:50%;transform:scale(0);background:var(--ripple);pointer-events:none;animation:rippleGo .62s ease-out forwards}
+@keyframes rippleGo{to{transform:scale(2.8);opacity:0}}
+
+/* ---------- Form ---------- */
+.field{margin-bottom:14px}
+.label{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+.input{
+  width:100%;min-height:54px;border-radius:14px;border:1px solid var(--stroke);
+  background:var(--panel-2);color:var(--text);padding:0 15px;font-size:15px;font-weight:600;
+  outline:none;transition:border-color .2s,box-shadow .2s;appearance:none
+}
+.input::placeholder{color:var(--muted);font-weight:500}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(34,224,255,.14)}
+.input-amount{font-size:22px;font-weight:900;letter-spacing:.01em;min-height:62px}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 24px,calc(100% - 15px) 24px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:42px}
+.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.preset{
+  min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:var(--panel);
+  color:var(--text);font-size:12.5px;font-weight:700;cursor:pointer;overflow:hidden;position:relative;
+  transition:transform .16s,border-color .2s,background .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+.preset:hover{border-color:var(--accent);background:var(--panel-2)}
+.preset:active{transform:scale(.95)}
+
+/* ---------- Methods ---------- */
+.methods{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
+.method{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  min-height:88px;padding:10px 6px;border-radius:16px;border:1px solid var(--stroke);
+  background:var(--panel);color:var(--text);cursor:pointer;overflow:hidden;
+  transition:transform .18s,border-color .2s,box-shadow .22s,background .2s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+.method:hover{background:var(--panel-2)}
+.method:active{transform:scale(.95)}
+.method.active{
+  border-color:var(--mc);transform:translateY(-3px);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--mc) 22%,transparent),0 14px 30px -16px var(--mc);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--mc) 14%,transparent),transparent)
+}
+.method.active::after{content:'';position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--mc);box-shadow:0 0 10px var(--mc)}
+.method-badge{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  font-weight:900;font-size:12px;color:#fff;background:var(--mc);letter-spacing:.02em;
+  box-shadow:inset 0 -7px 12px rgba(0,0,0,.3),0 10px 20px -12px var(--mc)
+}
+.method-name{font-size:11px;font-weight:700;text-align:center;line-height:1.15}
+
+/* ---------- Instruction ---------- */
+.instr{
+  margin-top:14px;border-radius:16px;border:1px dashed var(--stroke-2);
+  background:linear-gradient(120deg,rgba(34,224,255,.08),rgba(139,92,255,.08));
+  padding:13px 14px;font-size:12.5px;color:var(--text);line-height:1.55
+}
+.instr b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.instr code{
+  display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  background:var(--panel-2);border:1px solid var(--stroke);border-radius:8px;padding:2px 7px;margin-top:4px
+}
+
+/* ---------- Badges ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
+  font-size:10px;font-weight:900;letter-spacing:.07em;border:1px solid transparent;white-space:nowrap
+}
+.badge-ok{background:rgba(32,227,160,.13);color:var(--ok);border-color:rgba(32,227,160,.32)}
+.badge-warn{background:rgba(255,176,32,.13);color:var(--warn);border-color:rgba(255,176,32,.32)}
+.badge-err{background:rgba(255,84,112,.13);color:var(--err);border-color:rgba(255,84,112,.32)}
+.badge-info{background:rgba(34,224,255,.13);color:var(--accent);border-color:rgba(34,224,255,.32)}
+.badge-muted{background:rgba(139,152,189,.13);color:var(--muted);border-color:rgba(139,152,189,.32)}
+.badge-demo{background:linear-gradient(135deg,rgba(255,176,32,.2),rgba(255,79,216,.2));color:#ffcb52;border-color:rgba(255,176,32,.35)}
+
+/* ---------- History ---------- */
+.hist-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.hist-tools{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0;justify-content:flex-end}
+.hist-tools .input{min-height:44px;font-size:13px;flex:1;min-width:130px;max-width:230px}
+.hist-tools select.input{flex:0 0 auto;min-width:120px;max-width:150px}
+.hist-list{display:flex;flex-direction:column;gap:9px;max-height:460px;overflow-y:auto;padding-right:4px}
+.hist-list::-webkit-scrollbar{width:6px}
+.hist-list::-webkit-scrollbar-thumb{background:var(--stroke-2);border-radius:9px}
+.hist-item{
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;
+  border:1px solid var(--stroke);background:var(--panel);cursor:pointer;
+  transition:transform .16s,border-color .2s,background .2s;overflow:hidden;position:relative
+}
+.hist-item:hover{border-color:var(--stroke-2);background:var(--panel-2)}
+.hist-item:active{transform:scale(.985)}
+.hist-icon{
+  width:42px;height:42px;border-radius:13px;flex:none;display:grid;place-items:center;
+  font-weight:900;font-size:11px;color:#fff;background:var(--mc,#5b6bff);
+  box-shadow:inset 0 -6px 12px rgba(0,0,0,.28)
+}
+.hist-main{flex:1;min-width:0}
+.hist-id{font-size:13px;font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-right{text-align:right;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.hist-amt{font-size:13.5px;font-weight:900;font-variant-numeric:tabular-nums}
+
+.empty{
+  text-align:center;padding:34px 16px;color:var(--muted);font-size:13px;
+  border:1px dashed var(--stroke-2);border-radius:16px
+}
+.empty b{display:block;color:var(--text);font-size:14px;margin-bottom:5px}
+
+/* ---------- Settings ---------- */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.set-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--stroke)
+}
+.set-row:last-child{border-bottom:none;padding-bottom:2px}
+.set-row:first-of-type{padding-top:4px}
+.set-row .row-title{font-size:13.5px;font-weight:700}
+.set-row .row-sub{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.switch{position:relative;display:inline-block;width:52px;height:30px;flex:none}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch .slider{
+  position:absolute;inset:0;border-radius:99px;cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--stroke-2);transition:background .25s,border-color .25s
+}
+.switch .slider::before{
+  content:'';position:absolute;width:22px;height:22px;border-radius:50%;left:3px;top:3px;
+  background:var(--muted);transition:transform .25s cubic-bezier(.22,1,.36,1),background .25s
+}
+.switch input:checked+.slider{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent}
+.switch input:checked+.slider::before{transform:translateX(22px);background:#04070f}
+.switch input:focus-visible+.slider{box-shadow:0 0 0 3px rgba(34,224,255,.3)}
+
+.segmented{display:inline-flex;padding:4px;border-radius:14px;border:1px solid var(--stroke);background:var(--panel-2);gap:4px;flex:none}
+.segmented button{
+  min-height:38px;padding:0 14px;border-radius:10px;border:none;background:transparent;color:var(--muted);
+  font-size:12.5px;font-weight:700;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap
+}
+.segmented button.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04070f}
+
+/* ---------- CS ---------- */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.help-card{
+  text-align:center;padding:26px 18px;
+  background:linear-gradient(150deg,rgba(34,224,255,.12),rgba(139,92,255,.12))
+}
+.help-emoji{
+  width:66px;height:66px;margin:0 auto 14px;border-radius:22px;display:grid;place-items:center;
+  font-size:30px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 20px 40px -20px var(--accent);animation:bob 3.6s ease-in-out infinite
+}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}
+.chip{
+  min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--stroke);
+  background:var(--panel);color:var(--text);font-size:12.5px;font-weight:700;cursor:pointer;
+  transition:transform .16s,border-color .2s,background .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+.chip:hover{border-color:var(--accent);background:var(--panel-2)}
+.chip:active{transform:scale(.95)}
+
+.chat-card{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:11px;padding:14px 16px;border-bottom:1px solid var(--stroke);background:var(--panel-2)}
+.chat-head .chat-av{
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#04070f;
+  background:linear-gradient(135deg,var(--accent),var(--accent-3))
+}
+.chat-head b{font-size:13.5px;display:block}
+.chat-head span{font-size:11px;color:var(--ok);display:flex;align-items:center;gap:5px}
+.chat-body{
+  flex:1;min-height:280px;max-height:400px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px
+}
+.chat-body::-webkit-scrollbar{width:6px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--stroke-2);border-radius:9px}
+.msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:13px;line-height:1.5;animation:msgIn .3s ease;word-wrap:break-word}
+@keyframes msgIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.msg.bot{align-self:flex-start;background:var(--panel-2);border:1px solid var(--stroke);border-bottom-left-radius:5px}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04070f;font-weight:600;border-bottom-right-radius:5px}
+.msg.typing{display:flex;gap:4px;align-items:center;padding:14px}
+.msg.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot 1.2s infinite}
+.msg.typing i:nth-child(2){animation-delay:.18s}
+.msg.typing i:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.chat-quick{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;border-top:1px solid var(--stroke);scrollbar-width:none}
+.chat-quick::-webkit-scrollbar{display:none}
+.chat-quick .chip{flex:none;font-size:12px;min-height:40px;padding:0 14px}
+.chat-input{display:flex;gap:9px;padding:12px 14px;border-top:1px solid var(--stroke);background:var(--panel-2)}
+.chat-input .input{min-height:46px;font-size:14px}
+
+/* ---------- Media ---------- */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.media-card{
+  text-align:center;padding:26px 20px;
+  background:linear-gradient(150deg,rgba(255,79,216,.14),rgba(139,92,255,.12))
+}
+.media-icon{
+  width:76px;height:76px;margin:0 auto 16px;border-radius:24px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#ff4fd8,#8b5cff);
+  box-shadow:0 22px 46px -22px #ff4fd8;
+  transition:transform .3s cubic-bezier(.22,1,.36,1)
+}
+.media-card:hover .media-icon{transform:translateY(-6px) rotate(-6deg) scale(1.05)}
+.media-icon svg{width:36px;height:36px;color:#fff}
+.media-handle{font-size:19px;font-weight:900;letter-spacing:.02em;margin:0 0 5px}
+.media-desc{font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.55}
+
+/* ---------- Footer ---------- */
+.footer{
+  margin-top:26px;padding:22px 18px;border-radius:var(--radius);border:1px solid var(--stroke);
+  background:var(--panel);text-align:center;font-size:12px;color:var(--muted)
+}
+.footer b{display:block;font-size:14px;color:var(--text);letter-spacing:.08em;margin-bottom:4px}
+.footer .foot-tag{font-size:11.5px;margin-bottom:10px}
+.footer a{color:var(--accent);text-decoration:none;font-weight:700}
+.footer .disclaimer{margin-top:12px;font-size:10.5px;opacity:.75;line-height:1.5}
+
+/* ---------- Bottom nav ---------- */
+.bottomnav{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:80;
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  background:var(--topbar-bg);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-top:1px solid var(--stroke)
+}
+.bn-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-width:520px;margin:0 auto}
+.bn-item{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:56px;border-radius:14px;border:none;background:transparent;color:var(--muted);
+  font-size:10px;font-weight:800;letter-spacing:.03em;cursor:pointer;overflow:hidden;
+  transition:color .2s,background .2s,transform .16s;-webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+.bn-item svg{width:21px;height:21px;transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.bn-item.active{color:var(--text);background:linear-gradient(120deg,rgba(34,224,255,.14),rgba(139,92,255,.12))}
+.bn-item.active svg{transform:translateY(-2px) scale(1.08)}
+.bn-item.active::after{
+  content:'';position:absolute;top:5px;width:18px;height:3px;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 0 12px var(--accent)
+}
+.bn-item:active{transform:scale(.94)}
+
+/* ---------- Modal ---------- */
+.modal{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  padding:16px;background:rgba(2,4,10,.68);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  overflow-y:auto;overscroll-behavior:contain
+}
+.modal.open{display:flex;animation:fadeIn .26s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-card{
+  position:relative;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;
+  border-radius:26px;border:1px solid var(--stroke-2);
+  background:linear-gradient(170deg,var(--panel-2),var(--panel));
+  -webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.04) inset;
+  padding:20px;animation:modalIn .42s cubic-bezier(.22,1,.36,1)
+}
+html[data-theme="light"] .modal-card{background:linear-gradient(170deg,#fff,rgba(255,255,255,.9))}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+.modal-card::-webkit-scrollbar{width:6px}
+.modal-card::-webkit-scrollbar-thumb{background:var(--stroke-2);border-radius:9px}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.modal-head h3{margin:0;font-size:16px;font-weight:900;letter-spacing:.09em}
+.modal-head p{margin:3px 0 0;font-size:11.5px;color:var(--muted)}
+.close-x{width:40px;height:40px;min-height:40px;border-radius:12px}
+
+.status-hero{
+  text-align:center;padding:20px 14px;border-radius:20px;margin-bottom:16px;
+  border:1px solid var(--stroke);background:linear-gradient(150deg,rgba(34,224,255,.1),rgba(139,92,255,.08))
+}
+.status-icon{
+  width:74px;height:74px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;
+  border:2px solid var(--stroke-2);background:var(--panel-2);transition:all .35s
+}
+.status-icon svg{width:36px;height:36px}
+.status-icon.ok{border-color:var(--ok);background:rgba(32,227,160,.14);box-shadow:0 0 30px -6px var(--ok)}
+.status-icon.err{border-color:var(--err);background:rgba(255,84,112,.14);box-shadow:0 0 30px -6px var(--err)}
+.status-icon.warn{border-color:var(--warn);background:rgba(255,176,32,.14);box-shadow:0 0 30px -6px var(--warn)}
+.status-icon.info{border-color:var(--accent);background:rgba(34,224,255,.14);box-shadow:0 0 30px -6px var(--accent)}
+.status-icon.muted{border-color:var(--muted);background:rgba(139,152,189,.12)}
+.status-title{font-size:14px;font-weight:900;letter-spacing:.09em}
+.status-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
+.draw-check{stroke-dasharray:40;stroke-dashoffset:40;animation:drawCheck .65s .15s ease forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+
+.inv-rows{display:flex;flex-direction:column;gap:1px;border-radius:16px;overflow:hidden;border:1px solid var(--stroke);margin-bottom:16px}
+.inv-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 14px;background:var(--panel);font-size:12.5px
+}
+.inv-row span{color:var(--muted);flex:none;font-weight:600}
+.inv-row b{font-weight:800;text-align:right;word-break:break-all;font-variant-numeric:tabular-nums}
+.inv-qr{display:flex;justify-content:center;margin-bottom:16px}
+.inv-qr canvas{width:150px;height:150px;border-radius:14px;background:#fff;box-shadow:0 14px 34px -18px rgba(34,224,255,.7)}
+.modal-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.modal-actions .span-2{grid-column:1/-1}
+
+/* ---------- Community popup ---------- */
+.community-card{
+  text-align:center;max-width:420px;padding:30px 22px;
+  border:1px solid rgba(139,92,255,.4);
+  box-shadow:0 40px 100px -30px rgba(139,92,255,.9),0 0 0 1px rgba(255,255,255,.06) inset
+}
+.community-card::before{
+  content:'';position:absolute;inset:-40%;z-index:0;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent,rgba(34,224,255,.16),transparent 30%,rgba(255,79,216,.16),transparent 60%);
+  animation:spinSlow 12s linear infinite
+}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+.community-card>*{position:relative;z-index:1}
+.comm-icon{
+  width:78px;height:78px;margin:0 auto 16px;border-radius:26px;display:grid;place-items:center;font-size:34px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 24px 50px -22px var(--accent-2);animation:bob 3.4s ease-in-out infinite
+}
+.community-card h3{margin:0 0 10px;font-size:18px;font-weight:900;letter-spacing:.07em}
+.community-card p{margin:0 0 22px;font-size:13px;color:var(--muted);line-height:1.6}
+.community-card .modal-actions{grid-template-columns:1fr 1fr}
+
+/* ---------- Notification panel ---------- */
+.notif-panel{
+  position:fixed;top:0;right:0;bottom:0;width:min(360px,90vw);z-index:320;
+  display:flex;flex-direction:column;
+  background:var(--topbar-bg);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  border-left:1px solid var(--stroke);box-shadow:-30px 0 70px -30px rgba(0,0,0,.9);
+  transform:translateX(105%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  padding-top:env(safe-area-inset-top)
+}
+.notif-panel.open{transform:none}
+.notif-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;border-bottom:1px solid var(--stroke)}
+.notif-head h3{margin:0;font-size:14px;font-weight:900;letter-spacing:.08em}
+.notif-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px}
+.notif-item{padding:12px;border-radius:14px;border:1px solid var(--stroke);background:var(--panel);font-size:12.5px}
+.notif-item b{display:block;font-size:12.5px;margin-bottom:3px}
+.notif-item span{color:var(--muted);font-size:11.5px;line-height:1.5;display:block}
+.notif-item time{display:block;font-size:10px;color:var(--muted);margin-top:6px;opacity:.75}
+.scrim{
+  position:fixed;inset:0;z-index:310;background:rgba(2,4,10,.6);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s
+}
+.scrim.show{opacity:1;visibility:visible}
+
+/* ---------- Processing overlay ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:400;display:none;place-items:center;padding:20px;
+  background:rgba(3,5,12,.78);-webkit-backdrop-filter:blur(11px);backdrop-filter:blur(11px)
+}
+.overlay.show{display:grid;animation:fadeIn .22s ease}
+.proc-box{text-align:center;max-width:340px}
+.spinner{
+  width:66px;height:66px;margin:0 auto 20px;border-radius:50%;
+  border:4px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-right-color:var(--accent-2);
+  animation:spin 1s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-title{font-size:14px;font-weight:900;letter-spacing:.1em;margin-bottom:6px}
+.proc-sub{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ---------- Toasts ---------- */
+.toast-wrap{
+  position:fixed;z-index:500;left:50%;transform:translateX(-50%);
+  bottom:calc(96px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(380px,92vw)
+}
+.toast{
+  width:100%;padding:12px 15px;border-radius:15px;font-size:12.5px;font-weight:600;line-height:1.45;
+  border:1px solid var(--stroke-2);background:var(--panel-solid);color:var(--text);
+  box-shadow:0 20px 44px -20px rgba(0,0,0,.95);
+  animation:toastIn .32s cubic-bezier(.22,1,.36,1);word-wrap:break-word
+}
+.toast b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;opacity:.85}
+.toast.ok{border-color:rgba(32,227,160,.45)}
+.toast.ok b{color:var(--ok)}
+.toast.err{border-color:rgba(255,84,112,.45)}
+.toast.err b{color:var(--err)}
+.toast.warn{border-color:rgba(255,176,32,.45)}
+.toast.warn b{color:var(--warn)}
+.toast.info b{color:var(--accent)}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px) scale(.96)}}
+
+.muted{color:var(--muted)}
+.small{font-size:11.5px}
+.mt-14{margin-top:14px}
+.mb-14{margin-bottom:14px}
+.hidden{display:none!important}
+
+/* ---------- Performance / accessibility modes ---------- */
+body.no-glass .card,
+body.no-glass .sidebar,
+body.no-glass .topbar,
+body.no-glass .bottomnav,
+body.no-glass .modal-card,
+body.no-glass .notif-panel,
+body.no-glass .modal{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.no-glass .card{background:var(--panel-solid)}
+body.no-glass .modal{background:rgba(2,4,10,.92)}
+body.reduce-blur .card,body.reduce-blur .sidebar,body.reduce-blur .topbar,
+body.reduce-blur .bottomnav,body.reduce-blur .modal-card{-webkit-backdrop-filter:blur(6px)!important;backdrop-filter:blur(6px)!important}
+body.no-particle .orb,body.no-particle .grid-lines{display:none}
+body.no-particle .bg-fx{background:var(--bg)}
+body.no-3d .card,body.no-3d .tilt{transform:none!important}
+body.no-anim *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+body.no-anim .spinner{animation-duration:1s!important;animation-iteration-count:infinite!important}
+body.no-anim .dot-live{animation-duration:2s!important;animation-iteration-count:infinite!important}
+
+@media (prefers-reduced-motion: reduce){
+  .orb,.grid-lines{animation:none!important}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:1024px){
+  .sidebar{transform:translateX(-105%);box-shadow:26px 0 70px -30px rgba(0,0,0,.9)}
+  .sidebar.open{transform:none}
+  .shell{margin-left:0}
+  .bottomnav{display:block}
+  .pay-grid{grid-template-columns:1fr}
+  .qr-stage canvas{max-width:270px}
+  .main{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+}
+@media (min-width:1025px){
+  .menu-btn{display:none}
+}
+@media (max-width:768px){
+  .main{padding-left:14px;padding-right:14px}
+  .topbar{padding-left:14px;padding-right:14px}
+  .topbar h1{font-size:13.5px}
+  .pill-online span.txt{display:none}
+  .pill-online{padding:8px 10px}
+  .card{padding:15px;border-radius:19px}
+  .stats-grid{gap:11px}
+  .stat{padding:14px}
+  .modal-card{padding:17px;border-radius:22px}
+  .method{min-height:82px}
+  .methods{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+  .method-badge{width:34px;height:34px;font-size:11px}
+  .method-name{font-size:10.5px}
+  .hist-tools{justify-content:stretch;width:100%}
+  .hist-tools .input{max-width:none}
+  .hist-tools select.input{max-width:none;flex:1}
+  .presets{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .preset{font-size:11.5px}
+}
+@media (max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .stat .stat-value{font-size:17px}
+  .stat .stat-label{font-size:9.5px}
+  .qr-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .qr-actions .btn{font-size:11.5px;padding:0 10px;min-height:44px}
+  .modal-actions{grid-template-columns:1fr}
+  .modal-actions .span-2{grid-column:auto}
+  .community-card .modal-actions{grid-template-columns:1fr}
+  .inv-row{font-size:11.5px;padding:10px 12px}
+  .hist-right{align-items:flex-end}
+  .hist-amt{font-size:12.5px}
+  .input-amount{font-size:19px;min-height:56px}
+}
+@media (max-width:360px){
+  .main{padding-left:11px;padding-right:11px}
+  .methods{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .btn{font-size:12px;padding:0 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ BACKGROUND FX ============ -->
+<div class="bg-fx" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-lines"></div>
+</div>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">X</div>
+      <div class="brand-text">
+        <b>XTAN PAYMENT</b>
+        <span>Modern Digital Payment</span>
+      </div>
+    </div>
+
+    <nav class="nav" id="sidebarNav">
+      <button class="nav-item active" data-view="payment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
+        <span>PAYMENT</span>
+      </button>
+      <button class="nav-item" data-view="setting">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        <span>SETTING</span>
+      </button>
+      <button class="nav-item" data-view="cs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>CS / CUSTOMER SERVICE</span>
+      </button>
+      <button class="nav-item" data-view="media">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        <span>MEDIA ADMIN</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="sys-card">
+        <b>● SYSTEM ONLINE</b>
+        Xtan mode — tidak terhubung ke payment processor asli.
+      </div>
+      <div class="ver">XTAN PAYMENT v1.0 · </div>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============ SHELL ============ -->
+  <div class="shell">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <h1 id="topTitle">XTAN PAYMENT</h1>
+      <div class="top-spacer"></div>
+      <span class="pill-online"><i class="dot-live"></i><span class="txt">SYSTEM ONLINE</span></span>
+      <button class="icon-btn" id="notifBtn" aria-label="Notifikasi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="notif-dot" id="notifDot">0</span>
+      </button>
+      <div class="avatar" title=" User">XT</div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+
+      <!-- ================= PAYMENT VIEW ================= -->
+      <section class="view active" id="view-payment">
+
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="card stat tilt">
+            <div class="stat-glow" style="background:#22e0ff"></div>
+            <div class="stat-label">Today Transaction</div>
+            <div class="stat-value" id="statTx">0</div>
+            <div class="stat-foot">Transaksi hari ini</div>
+          </div>
+          <div class="card stat tilt">
+            <div class="stat-glow" style="background:#20e3a0"></div>
+            <div class="stat-label">Today Revenue</div>
+            <div class="stat-value" id="statRev">Rp0</div>
+            <div class="stat-foot">Pembayaran sukses</div>
+          </div>
+          <div class="card stat tilt">
+            <div class="stat-glow" style="background:#8b5cff"></div>
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-value" id="statRate">0%</div>
+            <div class="stat-foot">Dari total transaksi</div>
+          </div>
+          <div class="card stat tilt">
+            <div class="stat-glow" style="background:#ffb020"></div>
+            <div class="stat-label">Active Payment</div>
+            <div class="stat-value" id="statActive">0</div>
+            <div class="stat-foot">Menunggu pembayaran</div>
+          </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="pay-grid">
+
+          <!-- QR CARD -->
+          <div class="card qr-card tilt" id="qrCard">
+            <div class="qr-head">
+              <div>
+                <h2>QR ALL PAYMENT</h2>
+                <p>Scan &amp; Pay dengan mudah</p>
+              </div>
+              <span class="badge badge-demo">Xtan PAYMENT</span>
+            </div>
+
+            <div class="qr-stage" id="qrStage">
+              <canvas id="qrCanvas" width="600" height="600" aria-label="QR pembayaran "></canvas>
+              <div class="qr-scan"></div>
+            </div>
+
+            <div class="qr-statusbar">
+              <span class="badge badge-muted" id="qrStatusBadge">NO ACTIVE PAYMENT</span>
+              <span class="countdown" id="qrCountdown">--:--</span>
+            </div>
+            <div class="progress"><i id="qrProgress" style="width:0%"></i></div>
+
+            <div class="qr-actions">
+              <button class="btn btn-primary" id="btnGenerate">GENERATE PAYMENT</button>
+              <button class="btn" id="btnCopyPayId" disabled>COPY PAYMENT ID</button>
+              <button class="btn" id="btnDownloadQr" disabled>DOWNLOAD QR</button>
+              <button class="btn" id="btnShareQr" disabled>SHARE QR</button>
+              <button class="btn" id="btnFullscreen" disabled>FULLSCREEN</button>
+              <button class="btn btn-success hidden" id="btnNewPayment">CREATE NEW PAYMENT</button>
+            </div>
+            <p class="small muted mt-14" style="margin-bottom:0">
+               Payment Gateway — belum terhubung ke sistem pembayaran asli.
+            </p>
+          </div>
+
+          <!-- FORM CARD -->
+          <div class="card form-card tilt">
+            <div class="mb-14">
+              <p class="card-title">Create Payment</p>
+              <p class="card-sub">Masukkan nominal lalu pilih metode pembayaran.</p>
+            </div>
+
+            <div class="field">
+              <label class="label" for="amountInput">Nominal (IDR)</label>
+              <input class="input input-amount" id="amountInput" type="text" inputmode="numeric"
+                     autocomplete="off" placeholder="Rp0" value="">
+              <div class="presets" id="presets"></div>
+              <p class="small muted" style="margin:8px 0 0">Minimal Rp1.000 · Maksimal Rp10.000.000</p>
+            </div>
+
+            <div class="field">
+              <label class="label">Metode Pembayaran</label>
+              <div class="methods" id="methods"></div>
+            </div>
+
+            <div class="instr" id="instrBox">
+              <b>Instruksi</b>
+              <span id="instrText">Pilih metode pembayaran untuk melihat instruksi.</span>
+            </div>
+
+            <button class="btn btn-primary btn-block mt-14" id="btnCreate">
+              CREATE PAYMENT
+            </button>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="card hist-card">
+          <div class="hist-head">
+            <div>
+              <p class="card-title">Transaction History</p>
+              <p class="card-sub">Data tersimpan lokal di perangkat Anda (localStorage).</p>
+            </div>
+            <div class="hist-tools">
+              <input class="input" id="histSearch" type="search" placeholder="Cari transaksi…" autocomplete="off">
+              <select class="input" id="histFilter">
+                <option value="ALL">Semua Status</option>
+                <option value="SUCCESS">SUCCESS</option>
+                <option value="PENDING">PENDING</option>
+                <option value="FAILED">FAILED</option>
+                <option value="EXPIRED">EXPIRED</option>
+              </select>
+              <button class="btn btn-danger" id="btnClearHist" style="min-height:44px">CLEAR</button>
+            </div>
+          </div>
+          <div class="hist-list" id="histList"></div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+          <b>XTAN PAYMENT</b>
+          <div class="foot-tag">"Modern Digital Payment Interface"</div>
+          <div>Instagram: <a href="https://instagram.com/abctanuu" target="_blank" rel="noopener noreferrer">@abctanuu</a></div>
+          <div class="disclaimer"> interface — not connected to a real payment processor.<br>Seluruh transaksi pada halaman ini bersifat simulasi dan tidak memproses uang sungguhan.</div>
+        </footer>
+      </section>
+
+      <!-- ================= SETTING VIEW ================= -->
+      <section class="view" id="view-setting">
+        <div class="set-grid">
+
+          <div class="card tilt">
+            <p class="card-title">Appearance</p>
+            <p class="card-sub mb-14">Tampilan dan efek visual aplikasi.</p>
+
+            <div class="set-row">
+              <div>
+                <div class="row-title">Theme</div>
+                <div class="row-sub">Dark, Light, atau ikuti sistem.</div>
+              </div>
+              <div class="segmented" id="themeSeg">
+                <button data-theme-set="dark">Dark</button>
+                <button data-theme-set="light">Light</button>
+                <button data-theme-set="auto">Auto</button>
+              </div>
+            </div>
+
+            <div class="set-row">
+              <div><div class="row-title">3D Effect</div><div class="row-sub">Efek tilt 3D pada kartu.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="effect3d"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Glass Effect</div><div class="row-sub">Efek kaca / blur transparan.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="glass"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Animation</div><div class="row-sub">Animasi &amp; transisi halaman.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="animation"><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="card tilt">
+            <p class="card-title">Performance</p>
+            <p class="card-sub mb-14">Optimasi untuk perangkat low-end.</p>
+
+            <div class="set-row">
+              <div><div class="row-title">Low Performance Mode</div><div class="row-sub">Matikan efek berat secara menyeluruh.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="lowPerf"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Auto Performance Detection</div><div class="row-sub">Deteksi otomatis kemampuan perangkat.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="autoPerf"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Reduce Blur</div><div class="row-sub">Kurangi intensitas backdrop blur.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="reduceBlur"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Reduce Particle</div><div class="row-sub">Matikan orb &amp; grid background.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="reduceParticle"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Reduce Animation</div><div class="row-sub">Nonaktifkan animasi non-esensial.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="reduceAnimation"><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="card tilt">
+            <p class="card-title">Interaction</p>
+            <p class="card-sub mb-14">Umpan balik saat berinteraksi.</p>
+
+            <div class="set-row">
+              <div><div class="row-title">Sound Effect</div><div class="row-sub">Bunyi halus saat menekan tombol.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="sound"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Haptic Feedback</div><div class="row-sub">Getaran (jika didukung browser).</div></div>
+              <label class="switch"><input type="checkbox" data-setting="haptic"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+              <div><div class="row-title">Ripple Effect</div><div class="row-sub">Efek gelombang pada tombol.</div></div>
+              <label class="switch"><input type="checkbox" data-setting="ripple"><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="card tilt">
+            <p class="card-title">Payment</p>
+            <p class="card-sub mb-14">Konfigurasi dasar payment gateway.</p>
+
+            <div class="field">
+              <label class="label" for="setMerchant">Merchant Name</label>
+              <input class="input" id="setMerchant" type="text" maxlength="40" data-setting="merchantName" placeholder="XTAN PAYMENT">
+            </div>
+            <div class="field">
+              <label class="label" for="setPaymentId">Payment ID Prefix</label>
+              <input class="input" id="setPaymentId" type="text" maxlength="12" data-setting="paymentIdPrefix" placeholder="XTAN">
+            </div>
+            <div class="field">
+              <label class="label" for="setStore">Store Name</label>
+              <input class="input" id="setStore" type="text" maxlength="40" data-setting="storeName" placeholder="XTAN Store ">
+            </div>
+            <div class="field">
+              <label class="label" for="setCurrency">Currency</label>
+              <select class="input" id="setCurrency" data-setting="currency">
+                <option value="IDR">IDR — Rupiah</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="setDefaultAmount">Default Amount</label>
+              <input class="input" id="setDefaultAmount" type="text" inputmode="numeric" data-setting="defaultAmount" placeholder="50000">
+            </div>
+            <div class="field">
+              <label class="label" for="setExpiry">Expiration Time (menit)</label>
+              <input class="input" id="setExpiry" type="number" min="1" max="120" data-setting="expirationMinutes">
+            </div>
+
+            <button class="btn btn-danger btn-block mt-14" id="btnResetSettings">RESET SETTINGS</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= CS VIEW ================= -->
+      <section class="view" id="view-cs">
+        <div class="cs-grid" style="margin-bottom:16px">
+
+          <div class="card help-card tilt">
+            <div class="help-emoji">💬</div>
+            <p class="card-title" style="color:var(--text);font-size:18px;letter-spacing:.04em;text-transform:none">Need Help?</p>
+            <p class="card-sub" style="margin-top:6px">Tim  XTAN PAYMENT siap membantu Anda memahami alur pembayaran.</p>
+            <div class="chips">
+              <button class="chip" data-quick="Payment Problem">Payment Problem</button>
+              <button class="chip" data-quick="QR Problem">QR Problem</button>
+              <button class="chip" data-quick="Transaction Problem">Transaction Problem</button>
+              <button class="chip" data-quick="General Question">General Question</button>
+            </div>
+          </div>
+
+          <div class="card help-card tilt" style="background:linear-gradient(150deg,rgba(32,227,160,.14),rgba(34,224,255,.1))">
+            <div class="help-emoji" style="background:linear-gradient(135deg,#20e3a0,#22e0ff);box-shadow:0 20px 40px -20px #20e3a0">⚡</div>
+            <p class="card-title" style="color:var(--text);font-size:18px;letter-spacing:.04em;text-transform:none">Fast Response</p>
+            <p class="card-sub" style="margin-top:6px">Rata-rata balasan  instan. Semua jawaban bersifat simulasi.</p>
+            <button class="btn btn-primary btn-block mt-14" id="btnContactAdmin">CONTACT ADMIN</button>
+          </div>
+        </div>
+
+        <div class="card chat-card">
+          <div class="chat-head">
+            <div class="chat-av">CS</div>
+            <div style="flex:1;min-width:0">
+              <b>XTAN PAYMENT CS</b>
+              <span><i class="dot-live"></i> Online —  chat</span>
+            </div>
+          </div>
+          <div class="chat-body" id="chatBody"></div>
+          <div class="chat-quick" id="chatQuick">
+            <button class="chip" data-chat="Cara pembayaran">Cara pembayaran</button>
+            <button class="chip" data-chat="Cek transaksi">Cek transaksi</button>
+            <button class="chip" data-chat="Masalah QR">Masalah QR</button>
+            <button class="chip" data-chat="Hubungi admin">Hubungi admin</button>
+          </div>
+          <div class="chat-input">
+            <input class="input" id="chatInput" type="text" placeholder="Tulis pesan…" autocomplete="off" maxlength="200">
+            <button class="btn btn-primary" id="chatSend" style="min-height:46px;flex:none">KIRIM</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MEDIA ADMIN VIEW ================= -->
+      <section class="view" id="view-media">
+        <div class="media-grid">
+          <div class="card media-card tilt">
+            <div class="media-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+            </div>
+            <p class="media-handle">@abctanuu</p>
+            <p class="media-desc">Follow our official media<br>Update fitur, info maintenance, dan bantuan.</p>
+            <button class="btn btn-primary btn-block" id="btnIg">OPEN INSTAGRAM</button>
+          </div>
+
+          <div class="card media-card tilt" style="background:linear-gradient(150deg,rgba(34,224,255,.14),rgba(32,227,160,.1))">
+            <div class="media-icon" style="background:linear-gradient(135deg,#22e0ff,#20e3a0);box-shadow:0 22px 46px -22px #22e0ff">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <p class="media-handle">Community</p>
+            <p class="media-desc">Gabung komunitas untuk mendapatkan update terbaru, informasi, dan bantuan.</p>
+            <button class="btn btn-block" id="btnCommunity2">JOIN COMMUNITY</button>
+          </div>
+
+          <div class="card media-card tilt" style="background:linear-gradient(150deg,rgba(255,176,32,.14),rgba(255,79,216,.1))">
+            <div class="media-icon" style="background:linear-gradient(135deg,#ffb020,#ff4fd8);box-shadow:0 22px 46px -22px #ffb020">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+            </div>
+            <p class="media-handle">Admin Support</p>
+            <p class="media-desc">Butuh bantuan langsung? Hubungi admin melalui kanal resmi.</p>
+            <button class="btn btn-block" id="btnAdmin2">CONTACT ADMIN</button>
+          </div>
+        </div>
+
+        <div class="card mt-14 tilt" style="margin-top:16px">
+          <p class="card-title">Follow our official media</p>
+          <p class="card-sub">Semua kanal resmi XTAN PAYMENT (data ).</p>
+          <div class="inv-rows" style="margin-top:14px;margin-bottom:0">
+            <div class="inv-row"><span>Instagram</span><b>@abctanuu</b></div>
+            <div class="inv-row"><span>Community</span><b>example.com/community</b></div>
+            <div class="inv-row"><span>Support</span><b> Channel</b></div>
+            <div class="inv-row"><span>Status</span><b style="color:var(--ok)">● ONLINE</b></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bottomnav" id="bottomNav">
+  <div class="bn-inner">
+    <button class="bn-item active" data-view="payment">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
+      <span>Payment</span>
+    </button>
+    <button class="bn-item" data-view="setting">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+      <span>Setting</span>
+    </button>
+    <button class="bn-item" data-view="cs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>CS</span>
+    </button>
+    <button class="bn-item" data-view="media">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      <span>Media</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============ INVOICE MODAL ============ -->
+<div class="modal" id="invoiceModal" role="dialog" aria-modal="true" aria-label="Invoice">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>INVOICE</h3>
+        <p> payment gateway — data simulasi</p>
+      </div>
+      <button class="icon-btn close-x" data-close="invoiceModal" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="status-hero">
+      <div class="status-icon" id="invStatusIcon"></div>
+      <div class="status-title" id="invStatusText">WAITING PAYMENT</div>
+      <div class="status-sub" id="invCountdown">Menunggu pembayaran…</div>
+    </div>
+
+    <div class="inv-qr">
+      <canvas id="invQrCanvas" width="420" height="420"></canvas>
+    </div>
+
+    <div class="inv-rows">
+      <div class="inv-row"><span>Invoice ID</span><b id="invInvoiceId">-</b></div>
+      <div class="inv-row"><span>Transaction ID</span><b id="invTxId">-</b></div>
+      <div class="inv-row"><span>Payment ID</span><b id="invPaymentId">-</b></div>
+      <div class="inv-row"><span>Merchant</span><b id="invMerchant">-</b></div>
+      <div class="inv-row"><span>Amount</span><b id="invAmount">-</b></div>
+      <div class="inv-row"><span>Method</span><b id="invMethod">-</b></div>
+      <div class="inv-row"><span>Created</span><b id="invCreated">-</b></div>
+      <div class="inv-row"><span>Expired</span><b id="invExpired">-</b></div>
+      <div class="inv-row"><span>Status</span><b id="invStatus">-</b></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="invCopyInvoice">COPY INVOICE ID</button>
+      <button class="btn" id="invCopyPayment">COPY PAYMENT ID</button>
+      <button class="btn" id="invDownload">DOWNLOAD QR</button>
+      <button class="btn" id="invShare">SHARE INVOICE</button>
+      <button class="btn btn-success span-2" id="invCheck">CHECK PAYMENT</button>
+      <button class="btn btn-danger" id="invCancel">CANCEL PAYMENT</button>
+      <button class="btn btn-ghost" data-close="invoiceModal">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FULLSCREEN QR MODAL ============ -->
+<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="QR Fullscreen">
+  <div class="modal-card" style="max-width:520px;text-align:center">
+    <div class="modal-head" style="justify-content:center;position:relative">
+      <div style="width:100%">
+        <h3 style="text-align:center">QR ALL PAYMENT</h3>
+        <p style="text-align:center">Scan &amp; Pay dengan mudah</p>
+      </div>
+      <button class="icon-btn close-x" data-close="qrModal" style="position:absolute;right:0;top:0" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="qr-stage" style="padding:6px 0 16px">
+      <canvas id="fsQrCanvas" width="720" height="720" style="max-width:min(360px,72vw)"></canvas>
+    </div>
+    <div style="font-size:13px;font-weight:800" id="fsQrAmount">-</div>
+    <div class="small muted" id="fsQrId" style="margin-top:4px">-</div>
+    <span class="badge badge-demo mt-14" style="margin-top:12px">Xtan PAYMENT</span>
+  </div>
+</div>
+
+<!-- ============ COMMUNITY POPUP ============ -->
+<div class="modal" id="communityModal" role="dialog" aria-modal="true" aria-label="Join Community">
+  <div class="modal-card community-card">
+    <button class="icon-btn close-x" data-close="communityModal" style="position:absolute;right:14px;top:14px;z-index:3" aria-label="Tutup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="comm-icon">🚀</div>
+    <h3>JOIN OUR COMMUNITY</h3>
+    <p>Gabung komunitas untuk mendapatkan update terbaru, informasi, dan bantuan.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="joinCommunityBtn">JOIN COMMUNITY</button>
+      <button class="btn" data-close="communityModal">LATER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NOTIFICATION PANEL ============ -->
+<div class="scrim" id="notifScrim"></div>
+<aside class="notif-panel" id="notifPanel" aria-label="Notifikasi">
+  <div class="notif-head">
+    <h3>NOTIFICATIONS</h3>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="notifClear" style="min-height:38px;font-size:11.5px;padding:0 12px">CLEAR</button>
+      <button class="icon-btn close-x" id="notifClose" style="width:38px;height:38px;min-height:38px" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+</aside>
+
+<!-- ============ PROCESSING OVERLAY ============ -->
+<div class="overlay" id="processingOverlay">
+  <div class="proc-box">
+    <div class="spinner"></div>
+    <div class="proc-title">PROCESSING PAYMENT</div>
+    <div class="proc-sub">Mohon tunggu, sedang memeriksa status pembayaran …</div>
+  </div>
+</div>
+
+<!-- ============ TOASTS ============ -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   XTAN PAYMENT — APPLICATION SCRIPT
+    payment gateway (tanpa backend / API eksternal)
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ----------------------------------------------------------
+     1. KONFIGURASI
+     ---------------------------------------------------------- */
+  const PAYMENT_CONFIG = {
+    currency: 'IDR',
+    merchantName: 'XTAN PAYMENT',
+    provider: 'True',
+    expirationMinutes: 15
+  };
+
+  const COMMUNITY_URL = 'https://example.com/community';
+  const INSTAGRAM_URL = 'https://instagram.com/abctanuu';
+  // Ganti nilai berikut dengan link WhatsApp resmi Anda (mis. https://wa.me/62xxxx)
+  const WHATSAPP_ADMIN = '#';
+
+  const STORAGE_KEYS = {
+    settings: 'xtan_settings_v1',
+    history: 'xtan_history_v1',
+    notifications: 'xtan_notifications_v1',
+    popupSeen: 'xtan_popup_seen_v1'
+  };
+
+  /* ----------------------------------------------------------
+     2. HELPER
+     ---------------------------------------------------------- */
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function formatRupiah(n) {
+    const num = Number(n) || 0;
+    return 'Rp' + Math.round(num).toLocaleString('id-ID');
+  }
+
+  function formatNumber(n) {
+    return (Number(n) || 0).toLocaleString('id-ID');
+  }
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function formatDateTime(ts) {
+    try {
+      const d = new Date(ts);
+      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      return pad2(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() +
+             ' · ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    } catch (e) { return '-'; }
+  }
+
+  function formatTimeOnly(ts) {
+    try {
+      const d = new Date(ts);
+      return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    } catch (e) { return '--:--'; }
+  }
+
+  function formatDateOnly(ts) {
+    try {
+      const d = new Date(ts);
+      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      return pad2(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+    } catch (e) { return '-'; }
+  }
+
+  function formatMMSS(ms) {
+    if (ms < 0) ms = 0;
+    const total = Math.floor(ms / 1000);
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return pad2(m) + ':' + pad2(s);
+  }
+
+  function randomToken(len) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < len; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+    return out;
+  }
+
+  function isSameDay(ts, ref) {
+    const a = new Date(ts), b = new Date(ref);
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  /* ----------------------------------------------------------
+     3. STORAGE (dengan fallback in-memory)
+     ---------------------------------------------------------- */
+  const Store = (function () {
+    let available = false;
+    const mem = {};
+    try {
+      const k = '__xtan_test__';
+      window.localStorage.setItem(k, '1');
+      window.localStorage.removeItem(k);
+      available = true;
+    } catch (e) {
+      available = false;
+    }
+    return {
+      ok: available,
+      get: function (key, fallback) {
+        try {
+          const raw = available ? window.localStorage.getItem(key) : mem[key];
+          if (raw == null) return fallback;
+          return JSON.parse(raw);
+        } catch (e) { return fallback; }
+      },
+      set: function (key, value) {
+        try {
+          const raw = JSON.stringify(value);
+          if (available) window.localStorage.setItem(key, raw);
+          else mem[key] = raw;
+          return true;
+        } catch (e) { return false; }
+      },
+      remove: function (key) {
+        try {
+          if (available) window.localStorage.removeItem(key);
+          else delete mem[key];
+        } catch (e) { /* ignore */ }
+      }
+    };
+  })();
+
+  /* ----------------------------------------------------------
+     4. STATE
+     ---------------------------------------------------------- */
+  const DEFAULT_SETTINGS = {
+    theme: 'dark',
+    effect3d: true,
+    glass: true,
+    animation: true,
+    lowPerf: false,
+    autoPerf: true,
+    reduceBlur: false,
+    reduceParticle: false,
+    reduceAnimation: false,
+    sound: false,
+    haptic: true,
+    ripple: true,
+    merchantName: 'XTAN PAYMENT',
+    paymentIdPrefix: 'XTAN',
+    storeName: 'XTAN Store ',
+    currency: 'IDR',
+    defaultAmount: 50000,
+    expirationMinutes: 15
+  };
+
+  const state = {
+    settings: Object.assign({}, DEFAULT_SETTINGS, Store.get(STORAGE_KEYS.settings, {}) || {}),
+    history: Store.get(STORAGE_KEYS.history, []) || [],
+    notifications: Store.get(STORAGE_KEYS.notifications, []) || [],
+    amount: 0,
+    method: 'qris',
+    tx: null,
+    currentView: 'payment',
+    autoLowPerf: false
+  };
+
+  if (!Array.isArray(state.history)) state.history = [];
+  if (!Array.isArray(state.notifications)) state.notifications = [];
+
+  let countdownTimer = null;
+  let processingLock = false;
+
+  /* ----------------------------------------------------------
+     5. PAYMENT METHODS
+     ---------------------------------------------------------- */
+  const METHODS = [
+    { id: 'qris',        name: 'QRIS',          tag: 'QR',  group: 'qr',      color: '#22e0ff' },
+    { id: 'dana',        name: 'DANA',          tag: 'DN',  group: 'ewallet', color: '#2f7bff' },
+    { id: 'gopay',       name: 'GoPay',         tag: 'GP',  group: 'ewallet', color: '#00b3b3' },
+    { id: 'ovo',         name: 'OVO',           tag: 'OV',  group: 'ewallet', color: '#7b2ff7' },
+    { id: 'shopeepay',   name: 'ShopeePay',     tag: 'SP',  group: 'ewallet', color: '#ff6a1a' },
+    { id: 'linkaja',     name: 'LinkAja',       tag: 'LA',  group: 'ewallet', color: '#e2231a' },
+    { id: 'bca',         name: 'BCA',           tag: 'BCA', group: 'bank',    color: '#0a63b0' },
+    { id: 'bri',         name: 'BRI',           tag: 'BRI', group: 'bank',    color: '#0a5bd6' },
+    { id: 'bni',         name: 'BNI',           tag: 'BNI', group: 'bank',    color: '#f47b20' },
+    { id: 'mandiri',     name: 'Mandiri',       tag: 'MD',  group: 'bank',    color: '#0b3d91' },
+    { id: 'banktransfer',name: 'Bank Transfer', tag: 'BT',  group: 'bank',    color: '#5b6bff' },
+    { id: 'ewallet',     name: 'E-Wallet',      tag: 'EW',  group: 'ewallet', color: '#00d0b0' }
+  ];
+
+  function getMethod(id) {
+    for (let i = 0; i < METHODS.length; i++) if (METHODS[i].id === id) return METHODS[i];
+    return METHODS[0];
+  }
+
+  const STATUS_STYLE = {
+    PENDING:    { badge: 'badge-warn',  icon: 'warn',  label: 'PENDING' },
+    PROCESSING: { badge: 'badge-info',  icon: 'info',  label: 'PROCESSING' },
+    SUCCESS:    { badge: 'badge-ok',    icon: 'ok',    label: 'SUCCESS' },
+    FAILED:     { badge: 'badge-err',   icon: 'err',   label: 'FAILED' },
+    EXPIRED:    { badge: 'badge-muted', icon: 'muted', label: 'EXPIRED' }
+  };
+
+  const STATUS_TEXT = {
+    PENDING: 'WAITING PAYMENT',
+    PROCESSING: 'PROCESSING',
+    SUCCESS: 'PAYMENT SUCCESS',
+    FAILED: 'PAYMENT FAILED',
+    EXPIRED: 'PAYMENT EXPIRED'
+  };
+
+  /* ----------------------------------------------------------
+     6.  QR GENERATOR (lokal, tanpa library eksternal)
+        Membuat matriks QR-like deterministik dari payload.
+        Bukan QR encoder penuh — murni untuk keperluan .
+     ---------------------------------------------------------- */
+  function hashString(str) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function buildQRMatrix(payload) {
+    const N = 37;
+    const m = [];
+    const reserved = [];
+    for (let r = 0; r < N; r++) {
+      m.push(new Array(N).fill(0));
+      reserved.push(new Array(N).fill(false));
+    }
+
+    function setCell(r, c, v) {
+      if (r < 0 || c < 0 || r >= N || c >= N) return;
+      m[r][c] = v;
+      reserved[r][c] = true;
+    }
+
+    function placeFinder(row, col) {
+      for (let i = -1; i <= 7; i++) {
+        for (let j = -1; j <= 7; j++) {
+          const rr = row + i, cc = col + j;
+          if (rr < 0 || cc < 0 || rr >= N || cc >= N) continue;
+          let v = 0;
+          if (i >= 0 && i <= 6 && j >= 0 && j <= 6) {
+            const ring = (i === 0 || i === 6 || j === 0 || j === 6);
+            const core = (i >= 2 && i <= 4 && j >= 2 && j <= 4);
+            v = (ring || core) ? 1 : 0;
+          }
+          setCell(rr, cc, v);
+        }
+      }
+    }
+
+    function placeAlign(row, col) {
+      for (let i = -2; i <= 2; i++) {
+        for (let j = -2; j <= 2; j++) {
+          const rr = row + i, cc = col + j;
+          if (rr < 0 || cc < 0 || rr >= N || cc >= N) continue;
+          const ring = (Math.abs(i) === 2 || Math.abs(j) === 2);
+          const core = (i === 0 && j === 0);
+          setCell(rr, cc, (ring || core) ? 1 : 0);
+        }
+      }
+    }
+
+    placeFinder(0, 0);
+    placeFinder(0, N - 7);
+    placeFinder(N - 7, 0);
+
+    for (let i = 8; i < N - 8; i++) {
+      setCell(6, i, i % 2 === 0 ? 1 : 0);
+      setCell(i, 6, i % 2 === 0 ? 1 : 0);
+    }
+
+    placeAlign(N - 9, N - 9);
+    setCell(N - 8, 8, 1);
+
+    const rand = mulberry32(hashString(String(payload)));
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        if (!reserved[r][c]) m[r][c] = rand() > 0.5 ? 1 : 0;
+      }
+    }
+    return m;
+  }
+
+  function drawQR(canvas, payload) {
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Background putih membulat
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, 0, 0, W, H, W * 0.055);
+    ctx.fill();
+
+    const matrix = buildQRMatrix(payload);
+    const N = matrix.length;
+    const quiet = 4;
+    const total = N + quiet * 2;
+    const cell = W / total;
+    const off = quiet * cell;
+
+    ctx.fillStyle = '#05070f';
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        if (!matrix[r][c]) continue;
+        const x = off + c * cell;
+        const y = off + r * cell;
+        roundRect(ctx, x + cell * 0.07, y + cell * 0.07, cell * 0.86, cell * 0.86, cell * 0.3);
+        ctx.fill();
+      }
+    }
+
+    // Logo tengah
+    const s = W * 0.17;
+    const cx = W / 2 - s / 2;
+    const cy = H / 2 - s / 2;
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, cx - s * 0.16, cy - s * 0.16, s * 1.32, s * 1.32, s * 0.3);
+    ctx.fill();
+
+    let grad;
+    try {
+      grad = ctx.createLinearGradient(cx, cy, cx + s, cy + s);
+      grad.addColorStop(0, '#22e0ff');
+      grad.addColorStop(1, '#8b5cff');
+    } catch (e) {
+      grad = '#22e0ff';
+    }
+    ctx.fillStyle = grad;
+    roundRect(ctx, cx, cy, s, s, s * 0.26);
+    ctx.fill();
+
+    ctx.fillStyle = '#04070f';
+    ctx.font = '900 ' + Math.round(s * 0.56) + 'px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('X', cx + s / 2, cy + s / 2 + s * 0.03);
+  }
+
+  /* ----------------------------------------------------------
+     7. UI ELEMENTS
+     ---------------------------------------------------------- */
+  const els = {
+    sidebar: $('#sidebar'),
+    scrim: $('#scrim'),
+    menuBtn: $('#menuBtn'),
+    topTitle: $('#topTitle'),
+    main: $('#main'),
+
+    qrCanvas: $('#qrCanvas'),
+    qrStage: $('#qrStage'),
+    qrStatusBadge: $('#qrStatusBadge'),
+    qrCountdown: $('#qrCountdown'),
+    qrProgress: $('#qrProgress'),
+
+    btnGenerate: $('#btnGenerate'),
+    btnCopyPayId: $('#btnCopyPayId'),
+    btnDownloadQr: $('#btnDownloadQr'),
+    btnShareQr: $('#btnShareQr'),
+    btnFullscreen: $('#btnFullscreen'),
+    btnNewPayment: $('#btnNewPayment'),
+
+    amountInput: $('#amountInput'),
+    presets: $('#presets'),
+    methods: $('#methods'),
+    instrText: $('#instrText'),
+    btnCreate: $('#btnCreate'),
+
+    statTx: $('#statTx'),
+    statRev: $('#statRev'),
+    statRate: $('#statRate'),
+    statActive: $('#statActive'),
+
+    histList: $('#histList'),
+    histSearch: $('#histSearch'),
+    histFilter: $('#histFilter'),
+    btnClearHist: $('#btnClearHist'),
+
+    invoiceModal: $('#invoiceModal'),
+    invStatusIcon: $('#invStatusIcon'),
+    invStatusText: $('#invStatusText'),
+    invCountdown: $('#invCountdown'),
+    invQrCanvas: $('#invQrCanvas'),
+    invInvoiceId: $('#invInvoiceId'),
+    invTxId: $('#invTxId'),
+    invPaymentId: $('#invPaymentId'),
+    invMerchant: $('#invMerchant'),
+    invAmount: $('#invAmount'),
+    invMethod: $('#invMethod'),
+    invCreated: $('#invCreated'),
+    invExpired: $('#invExpired'),
+    invStatus: $('#invStatus'),
+
+    qrModal: $('#qrModal'),
+    fsQrCanvas: $('#fsQrCanvas'),
+    fsQrAmount: $('#fsQrAmount'),
+    fsQrId: $('#fsQrId'),
+
+    communityModal: $('#communityModal'),
+    notifPanel: $('#notifPanel'),
+    notifScrim: $('#notifScrim'),
+    notifList: $('#notifList'),
+    notifDot: $('#notifDot'),
+    processingOverlay: $('#processingOverlay'),
+    toastWrap: $('#toastWrap'),
+    chatBody: $('#chatBody'),
+    chatInput: $('#chatInput')
+  };
+
+  /* ----------------------------------------------------------
+     8. TOAST & NOTIFIKASI
+     ---------------------------------------------------------- */
+  function toast(message, type, title) {
+    if (!els.toastWrap) return;
+    const el = document.createElement('div');
+    el.className = 'toast ' + (type || 'info');
+    el.innerHTML = (title ? '<b>' + escapeHtml(title) + '</b>' : '') + escapeHtml(message);
+    els.toastWrap.appendChild(el);
+    setTimeout(function () {
+      el.classList.add('out');
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      }, 320);
+    }, 2800);
+  }
+
+  function pushNotification(title, message, type) {
+    const item = {
+      id: 'NTF-' + Date.now() + '-' + Math.floor(Math.random() * 999),
+      title: title,
+      message: message,
+      type: type || 'info',
+      time: Date.now()
+    };
+    state.notifications.unshift(item);
+    if (state.notifications.length > 40) state.notifications.length = 40;
+    Store.set(STORAGE_KEYS.notifications, state.notifications);
+    renderNotifications();
+  }
+
+  function notify(title, message, type) {
+    pushNotification(title, message, type);
+    toast(message, type === 'success' ? 'ok' : (type === 'error' ? 'err' : (type === 'warning' ? 'warn' : 'info')), title);
+  }
+
+  function renderNotifications() {
+    if (!els.notifList) return;
+    if (!state.notifications.length) {
+      els.notifList.innerHTML = '<div class="empty"><b>Belum ada notifikasi</b>Notifikasi sistem akan muncul di sini.</div>';
+    } else {
+      const html = state.notifications.map(function (n) {
+        const cls = n.type === 'success' ? 'ok' : (n.type === 'error' ? 'err' : (n.type === 'warning' ? 'warn' : 'info'));
+        return '<div class="notif-item" style="border-left:3px solid var(--' + (cls === 'ok' ? 'ok' : cls === 'err' ? 'err' : cls === 'warn' ? 'warn' : 'accent') + ')">' +
+          '<b>' + escapeHtml(n.title) + '</b>' +
+          '<span>' + escapeHtml(n.message) + '</span>' +
+          '<time>' + escapeHtml(formatDateTime(n.time)) + '</time>' +
+          '</div>';
+      }).join('');
+      els.notifList.innerHTML = html;
+    }
+
+    const unread = state.notifications.length;
+    if (els.notifDot) {
+      if (unread > 0) {
+        els.notifDot.textContent = unread > 99 ? '99+' : String(unread);
+        els.notifDot.classList.add('show');
+      } else {
+        els.notifDot.classList.remove('show');
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------
+     9. SETTINGS
+     ---------------------------------------------------------- */
+  function detectLowPerformance() {
+    let weak = false;
+    try {
+      const cores = navigator.hardwareConcurrency || 4;
+      const mem = navigator.deviceMemory || navigator.deviceMemory === 0 ? navigator.deviceMemory : 4;
+      if (cores && cores <= 4) weak = true;
+      if (mem && mem <= 2) weak = true;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) weak = true;
+    } catch (e) { weak = false; }
+    return weak;
+  }
+
+  function applySettings() {
+    const s = state.settings;
+
+    // Theme
+    let theme = s.theme;
+    if (theme === 'auto') {
+      try {
+        theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      } catch (e) { theme = 'dark'; }
+    }
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#eaeffb' : '#05070f');
+    } catch (e) { /* ignore */ }
+
+    const body = document.body;
+    const lowPerf = s.lowPerf || state.autoLowPerf;
+
+    body.classList.toggle('no-3d', !s.effect3d || lowPerf);
+    body.classList.toggle('no-glass', !s.glass);
+    body.classList.toggle('no-anim', !s.animation || s.reduceAnimation || lowPerf);
+    body.classList.toggle('reduce-blur', !!s.reduceBlur || lowPerf);
+    body.classList.toggle('no-particle', !!s.reduceParticle || lowPerf);
+
+    // Segmented theme control
+    $$('#themeSeg button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-theme-set') === s.theme);
+    });
+
+    // Sync inputs
+    $$('[data-setting]').forEach(function (el) {
+      const key = el.getAttribute('data-setting');
+      if (!(key in s)) return;
+      if (el.type === 'checkbox') el.checked = !!s[key];
+      else el.value = s[key];
+    });
+
+    Store.set(STORAGE_KEYS.settings, s);
+  }
+
+  function saveSettings() {
+    Store.set(STORAGE_KEYS.settings, state.settings);
+    applySettings();
+  }
+
+  function bindSettingsControls() {
+    $$('[data-setting]').forEach(function (el) {
+      const key = el.getAttribute('data-setting');
+      if (!(key in DEFAULT_SETTINGS)) return;
+      const evt = (el.type === 'checkbox') ? 'change' : 'change';
+      el.addEventListener(evt, function () {
+        if (el.type === 'checkbox') {
+          state.settings[key] = el.checked;
+        } else if (el.type === 'number') {
+          let v = parseInt(el.value, 10);
+          if (isNaN(v)) v = DEFAULT_SETTINGS[key];
+          state.settings[key] = v;
+        } else if (el.id === 'setDefaultAmount') {
+          const digits = String(el.value).replace(/\D/g, '').slice(0, 9);
+          const num = digits ? parseInt(digits, 10) : 0;
+          state.settings[key] = num;
+          el.value = digits;
+        } else {
+          state.settings[key] = el.value;
+        }
+        saveSettings();
+        if (key === 'merchantName' || key === 'paymentIdPrefix' || key === 'expirationMinutes') {
+          refreshAll();
+        }
+        haptic(8);
+      });
+    });
+
+    $$('#themeSeg button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.settings.theme = btn.getAttribute('data-theme-set');
+        saveSettings();
+        haptic(8);
+      });
+    });
+
+    const resetBtn = $('#btnResetSettings');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        state.settings = Object.assign({}, DEFAULT_SETTINGS);
+        saveSettings();
+        notify('Settings', 'Semua pengaturan direset ke default.', 'success');
+      });
+    }
+
+    // Auto theme listener
+    try {
+      const mq = window.matchMedia('(prefers-color-scheme: light)');
+      const handler = function () {
+        if (state.settings.theme === 'auto') applySettings();
+      };
+      if (mq.addEventListener) mq.addEventListener('change', handler);
+      else if (mq.addListener) mq.addListener(handler);
+    } catch (e) { /* ignore */ }
+  }
+
+  /* ----------------------------------------------------------
+     10. INTERAKSI: RIPPLE, SOUND, HAPTIC
+     ---------------------------------------------------------- */
+  let audioCtx = null;
+  function beep(freq, dur) {
+    if (!state.settings.sound) return;
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq || 640;
+      gain.gain.value = 0.045;
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      const now = audioCtx.currentTime;
+      osc.start(now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + (dur || 0.07));
+      osc.stop(now + (dur || 0.07) + 0.02);
+    } catch (e) { /* silent */ }
+  }
+
+  function haptic(ms) {
+    if (!state.settings.haptic) return;
+    try {
+      if (navigator.vibrate) navigator.vibrate(ms || 12);
+    } catch (e) { /* silent */ }
+  }
+
+  function createRipple(target, clientX, clientY) {
+    if (!state.settings.ripple) return;
+    if (document.body.classList.contains('no-anim')) return;
+    try {
+      const rect = target.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const span = document.createElement('span');
+      span.className = 'ripple';
+      span.style.width = span.style.height = size + 'px';
+      span.style.left = (clientX - rect.left - size / 2) + 'px';
+      span.style.top = (clientY - rect.top - size / 2) + 'px';
+      target.appendChild(span);
+      setTimeout(function () {
+        if (span.parentNode) span.parentNode.removeChild(span);
+      }, 650);
+    } catch (e) { /* ignore */ }
+  }
+
+  function bindGlobalInteractions() {
+    document.addEventListener('pointerdown', function (e) {
+      const target = e.target && e.target.closest ? e.target.closest('.btn, .method, .preset, .chip, .nav-item, .bn-item, .icon-btn') : null;
+      if (!target) return;
+      if (target.disabled) return;
+      createRipple(target, e.clientX, e.clientY);
+      beep(600, 0.05);
+      haptic(9);
+    }, { passive: true });
+  }
+
+  /* ----------------------------------------------------------
+     11. 3D TILT
+     ---------------------------------------------------------- */
+  function initTilt(el) {
+    if (!el) return;
+    let ticking = false;
+    let lastX = 0, lastY = 0;
+
+    function apply() {
+      ticking = false;
+      if (!state.settings.effect3d || state.settings.lowPerf || state.autoLowPerf) return;
+      if (document.body.classList.contains('no-3d')) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const px = (lastX - rect.left) / rect.width;
+      const py = (lastY - rect.top) / rect.height;
+      const ry = (px - 0.5) * 9;
+      const rx = (0.5 - py) * 9;
+      el.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+      el.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+    }
+
+    el.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(apply);
+      else apply();
+    }, { passive: true });
+
+    el.addEventListener('pointerleave', function () {
+      el.style.setProperty('--rx', '0deg');
+      el.style.setProperty('--ry', '0deg');
+    }, { passive: true });
+
+    el.addEventListener('pointercancel', function () {
+      el.style.setProperty('--rx', '0deg');
+      el.style.setProperty('--ry', '0deg');
+    }, { passive: true });
+  }
+
+  function initAllTilt() {
+    $$('.tilt').forEach(initTilt);
+  }
+
+  /* ----------------------------------------------------------
+     12. NAVIGASI
+     ---------------------------------------------------------- */
+  const VIEW_TITLES = {
+    payment: 'XTAN PAYMENT',
+    setting: 'SETTING',
+    cs: 'CUSTOMER SERVICE',
+    media: 'MEDIA ADMIN'
+  };
+
+  function switchView(view) {
+    if (!VIEW_TITLES[view]) view = 'payment';
+    state.currentView = view;
+
+    $$('.view').forEach(function (v) {
+      v.classList.toggle('active', v.id === 'view-' + view);
+    });
+    $$('.nav-item').forEach(function (n) {
+      n.classList.toggle('active', n.getAttribute('data-view') === view);
+    });
+    $$('.bn-item').forEach(function (n) {
+      n.classList.toggle('active', n.getAttribute('data-view') === view);
+    });
+
+    if (els.topTitle) els.topTitle.textContent = VIEW_TITLES[view];
+    closeSidebar();
+
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+    haptic(10);
+    beep(720, 0.05);
+  }
+
+  function openSidebar() {
+    if (els.sidebar) els.sidebar.classList.add('open');
+    if (els.scrim) els.scrim.classList.add('show');
+  }
+
+  function closeSidebar() {
+    if (els.sidebar) els.sidebar.classList.remove('open');
+    if (els.scrim) els.scrim.classList.remove('show');
+  }
+
+  function bindNavigation() {
+    $$('[data-view]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        switchView(btn.getAttribute('data-view'));
+      });
+    });
+    if (els.menuBtn) els.menuBtn.addEventListener('click', openSidebar);
+    if (els.scrim) els.scrim.addEventListener('click', closeSidebar);
+
+    // Swipe navigation (horizontal)
+    let startX = 0, startY = 0, tracking = false;
+    const order = ['payment', 'setting', 'cs', 'media'];
+
+    els.main.addEventListener('touchstart', function (e) {
+      if (!e.touches || e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+
+    els.main.addEventListener('touchend', function (e) {
+      if (!tracking) return;
+      tracking = false;
+      if (!e.changedTouches || !e.changedTouches.length) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 70 || Math.abs(dy) > 50) return;
+      const idx = order.indexOf(state.currentView);
+      if (dx < 0 && idx < order.length - 1) switchView(order[idx + 1]);
+      else if (dx > 0 && idx > 0) switchView(order[idx - 1]);
+    }, { passive: true });
+  }
+
+  /* ----------------------------------------------------------
+     13. MODAL
+     ---------------------------------------------------------- */
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('open');
+    if (!document.querySelector('.modal.open')) document.body.style.overflow = '';
+  }
+
+  function bindModals() {
+    $$('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        closeModal(btn.getAttribute('data-close'));
+      });
+    });
+    $$('.modal').forEach(function (m) {
+      m.addEventListener('click', function (e) {
+        if (e.target === m) closeModal(m.id);
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        $$('.modal.open').forEach(function (m) { closeModal(m.id); });
+        closeNotifPanel();
+        closeSidebar();
+      }
+    });
+  }
+
+  /* ----------------------------------------------------------
+     14. NOTIFICATION PANEL
+     ---------------------------------------------------------- */
+  function openNotifPanel() {
+    if (els.notifPanel) els.notifPanel.classList.add('open');
+    if (els.notifScrim) els.notifScrim.classList.add('show');
+  }
+
+  function closeNotifPanel() {
+    if (els.notifPanel) els.notifPanel.classList.remove('open');
+    if (els.notifScrim) els.notifScrim.classList.remove('show');
+  }
+
+  function bindNotifPanel() {
+    const btn = $('#notifBtn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        if (els.notifPanel && els.notifPanel.classList.contains('open')) closeNotifPanel();
+        else openNotifPanel();
+      });
+    }
+    const closeBtn = $('#notifClose');
+    if (closeBtn) closeBtn.addEventListener('click', closeNotifPanel);
+    if (els.notifScrim) els.notifScrim.addEventListener('click', closeNotifPanel);
+
+    const clearBtn = $('#notifClear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        state.notifications = [];
+        Store.set(STORAGE_KEYS.notifications, []);
+        renderNotifications();
+        toast('Notifikasi dibersihkan.', 'info');
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------
+     15. PAYMENT ENGINE
+     ---------------------------------------------------------- */
+  function createTransaction(amount, methodId) {
+    const method = getMethod(methodId);
+    const now = Date.now();
+    const expMinutes = Math.max(1, parseInt(state.settings.expirationMinutes, 10) || PAYMENT_CONFIG.expirationMinutes);
+    const prefix = (state.settings.paymentIdPrefix || 'XTAN').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'XTAN';
+    const token = randomToken(6);
+    const stamp = String(now).slice(-6);
+
+    return {
+      id: 'TRX-' + stamp + '-' + randomToken(4),
+      invoiceId: 'INV-' + stamp + '-' + randomToken(4),
+      paymentId: prefix + '-isi token-' + token,
+      merchant: state.settings.merchantName || PAYMENT_CONFIG.merchantName,
+      store: state.settings.storeName || 'XTAN Store ',
+      amount: Math.round(Number(amount) || 0),
+      currency: state.settings.currency || PAYMENT_CONFIG.currency,
+      method: method.id,
+      methodName: method.name,
+      methodTag: method.tag,
+      methodColor: method.color,
+      provider: PAYMENT_CONFIG.provider,
+      status: 'PENDING',
+      createdAt: now,
+      expiresAt: now + expMinutes * 60 * 1000,
+      paidAt: null
+    };
+  }
+
+  function generatePaymentQR(tx) {
+    if (!tx) return null;
+    const payload = JSON.stringify({
+      merchant: tx.merchant,
+      paymentId: tx.paymentId,
+      amount: tx.amount,
+      currency: tx.currency,
+      timestamp: new Date(tx.createdAt).toISOString(),
+      status: tx.status,
+      provider: tx.provider
+    });
+
+    drawQR(els.qrCanvas, payload);
+    drawQR(els.invQrCanvas, payload);
+    drawQR(els.fsQrCanvas, payload);
+    return payload;
+  }
+
+  function selectPaymentMethod(methodId) {
+    const method = getMethod(methodId);
+    state.method = method.id;
+
+    $$('.method').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-method') === method.id);
+    });
+
+    let instr = '';
+    if (method.group === 'qr') {
+      instr = 'Scan QR menggunakan aplikasi pembayaran Anda.';
+    } else if (method.group === 'ewallet') {
+      instr = 'Buka aplikasi e-wallet lalu lakukan pembayaran.';
+    } else {
+      instr = 'Tampilkan informasi rekening  dan nominal pembayaran.';
+    }
+
+    let extra = '';
+    if (method.group === 'bank') {
+      extra = '<br><br><b>Rekening </b>' +
+              '<code>XTAN  BANK — 0000 0000 0000 0000</code>' +
+              '<br><span class="small muted">Nomor rekening fiktif untuk keperluan . Jangan transfer dana nyata.</span>';
+    } else if (method.group === 'qr') {
+      extra = '<br><br><b>Metode</b><code>' + escapeHtml(method.name) + ' · ' + escapeHtml(method.tag) + '</code>';
+    } else {
+      extra = '<br><br><b>Metode</b><code>' + escapeHtml(method.name) + ' · ' + escapeHtml(method.tag) + '</code>';
+    }
+
+    if (els.instrText) els.instrText.innerHTML = escapeHtml(instr) + extra;
+    haptic(9);
+    beep(700, 0.05);
+  }
+
+  function saveTransaction(tx) {
+    if (!tx) return;
+    const idx = state.history.findIndex(function (t) { return t.id === tx.id; });
+    if (idx >= 0) state.history[idx] = tx;
+    else state.history.unshift(tx);
+
+    if (state.history.length > 120) state.history.length = 120;
+    Store.set(STORAGE_KEYS.history, state.history);
+    refreshAll();
+  }
+
+  function loadTransactionHistory() {
+    const data = Store.get(STORAGE_KEYS.history, []);
+    state.history = Array.isArray(data) ? data : [];
+    return state.history;
+  }
+
+  function checkPaymentStatus() {
+    if (!state.tx) return null;
+    return state.tx.status;
+  }
+
+  function updateTransactionStatus(status) {
+    if (!state.tx) return;
+    state.tx.status = status;
+    if (status === 'SUCCESS' || status === 'FAILED') state.tx.paidAt = Date.now();
+    saveTransaction(state.tx);
+    updateTransactionUI();
+  }
+
+  function cancelTransaction() {
+    if (!state.tx) {
+      toast('Tidak ada transaksi aktif.', 'warn');
+      return;
+    }
+    if (state.tx.status !== 'PENDING' && state.tx.status !== 'PROCESSING') {
+      toast('Transaksi sudah final: ' + state.tx.status, 'warn');
+      return;
+    }
+    stopCountdown();
+    updateTransactionStatus('FAILED');
+    notify('Payment Cancelled', 'Transaksi ' + state.tx.paymentId + ' dibatalkan.', 'warning');
+  }
+
+  function expireTransaction() {
+    if (!state.tx) return;
+    if (state.tx.status !== 'PENDING') return;
+    stopCountdown();
+    updateTransactionStatus('EXPIRED');
+    notify('Payment Expired', 'Waktu pembayaran ' + state.tx.paymentId + ' telah habis.', 'warning');
+  }
+
+  function simulatePayment() {
+    if (processingLock) return;
+    if (!state.tx) {
+      toast('Buat pembayaran terlebih dahulu.', 'warn', 'No Active Payment');
+      return;
+    }
+    if (state.tx.status === 'SUCCESS') {
+      toast('Pembayaran ini sudah sukses.', 'info');
+      return;
+    }
+    if (state.tx.status === 'EXPIRED' || state.tx.status === 'FAILED') {
+      toast('Transaksi sudah final: ' + state.tx.status, 'warn');
+      return;
+    }
+
+    processingLock = true;
+    updateTransactionStatus('PROCESSING');
+    showProcessing(true);
+
+    setTimeout(function () {
+      showProcessing(false);
+      processingLock = false;
+
+      // Simulasi hasil: 90% sukses
+      const success = Math.random() < 0.9;
+      const finalStatus = success ? 'SUCCESS' : 'FAILED';
+
+      stopCountdown();
+      updateTransactionStatus(finalStatus);
+      beep(success ? 980 : 320, 0.14);
+
+      if (success) {
+        notify('Payment Success', 'Pembayaran ' + state.tx.paymentId + ' berhasil (Xtan).', 'success');
+      } else {
+        notify('Payment Failed', 'Pembayaran ' + state.tx.paymentId + ' gagal (X).', 'error');
+      }
+    }, 2300);
+  }
+
+  function showProcessing(show) {
+    if (!els.processingOverlay) return;
+    els.processingOverlay.classList.toggle('show', !!show);
+  }
+
+  /* ----------------------------------------------------------
+     16. COUNTDOWN
+     ---------------------------------------------------------- */
+  function startCountdown() {
+    stopCountdown();
+    tickCountdown();
+    countdownTimer = setInterval(tickCountdown, 1000);
+  }
+
+  function stopCountdown() {
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+  }
+
+  function tickCountdown() {
+    if (!state.tx) {
+      if (els.qrCountdown) els.qrCountdown.textContent = '--:--';
+      if (els.qrProgress) els.qrProgress.style.width = '0%';
+      return;
+    }
+    if (state.tx.status !== 'PENDING') {
+      if (els.qrCountdown) {
+        els.qrCountdown.textContent = state.tx.status === 'EXPIRED' ? 'EXPIRED' :
+          (state.tx.status === 'SUCCESS' ? 'PAID' : (state.tx.status === 'FAILED' ? 'CLOSED' : '—'));
+      }
+      if (els.invCountdown) {
+        els.invCountdown.textContent = state.tx.status === 'SUCCESS' ? 'Pembayaran berhasil (✓)' :
+          (state.tx.status === 'EXPIRED' ? 'Waktu pembayaran telah habis' :
+            (state.tx.status === 'FAILED' ? 'Transaksi dibatalkan / gagal' : 'Memproses…'));
+      }
+      return;
+    }
+
+    const total = state.tx.expiresAt - state.tx.createdAt;
+    const left = state.tx.expiresAt - Date.now();
+
+    if (left <= 0) {
+      if (els.qrCountdown) els.qrCountdown.textContent = '00:00';
+      if (els.qrProgress) els.qrProgress.style.width = '0%';
+      expireTransaction();
+      return;
+    }
+
+    const txt = formatMMSS(left);
+    if (els.qrCountdown) els.qrCountdown.textContent = txt;
+    if (els.invCountdown) els.invCountdown.textContent = 'Expires in ' + txt;
+
+    const pct = total > 0 ? (left / total) * 100 : 0;
+    if (els.qrProgress) els.qrProgress.style.width = pct.toFixed(1) + '%';
+  }
+
+  /* ----------------------------------------------------------
+     17. UI UPDATE
+     ---------------------------------------------------------- */
+  function statusIconSvg(kind) {
+    if (kind === 'ok') {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path class="draw-check" d="M20 6 9 17l-5-5"/></svg>';
+    }
+    if (kind === 'err') {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+    }
+    if (kind === 'warn') {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>';
+    }
+    if (kind === 'info') {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>';
+    }
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>';
+  }
+
+  function updateTransactionUI() {
+    const tx = state.tx;
+
+    // QR card status
+    if (els.qrStatusBadge) {
+      if (!tx) {
+        els.qrStatusBadge.className = 'badge badge-muted';
+        els.qrStatusBadge.textContent = 'NO ACTIVE PAYMENT';
+      } else {
+        const st = STATUS_STYLE[tx.status] || STATUS_STYLE.PENDING;
+        els.qrStatusBadge.className = 'badge ' + st.badge;
+        els.qrStatusBadge.textContent = STATUS_TEXT[tx.status] || tx.status;
+      }
+    }
+
+    // Scanning animation
+    if (els.qrStage) {
+      els.qrStage.classList.toggle('scanning', !!tx && tx.status === 'PENDING');
+    }
+
+    // Buttons availability
+    const hasTx = !!tx;
+    const pending = hasTx && (tx.status === 'PENDING' || tx.status === 'PROCESSING');
+
+    if (els.btnCopyPayId) els.btnCopyPayId.disabled = !hasTx;
+    if (els.btnDownloadQr) els.btnDownloadQr.disabled = !hasTx;
+    if (els.btnShareQr) els.btnShareQr.disabled = !hasTx;
+    if (els.btnFullscreen) els.btnFullscreen.disabled = !hasTx;
+    if (els.btnNewPayment) els.btnNewPayment.classList.toggle('hidden', !(hasTx && (tx.status === 'EXPIRED' || tx.status === 'FAILED' || tx.status === 'SUCCESS')));
+
+    // Invoice modal content
+    if (tx) {
+      if (els.invInvoiceId) els.invInvoiceId.textContent = tx.invoiceId;
+      if (els.invTxId) els.invTxId.textContent = tx.id;
+      if (els.invPaymentId) els.invPaymentId.textContent = tx.paymentId;
+      if (els.invMerchant) els.invMerchant.textContent = tx.merchant;
+      if (els.invAmount) els.invAmount.textContent = formatRupiah(tx.amount);
+      if (els.invMethod) els.invMethod.textContent = tx.methodName;
+      if (els.invCreated) els.invCreated.textContent = formatDateTime(tx.createdAt);
+      if (els.invExpired) els.invExpired.textContent = formatDateTime(tx.expiresAt);
+
+      const st = STATUS_STYLE[tx.status] || STATUS_STYLE.PENDING;
+      if (els.invStatus) {
+        els.invStatus.innerHTML = '<span class="badge ' + st.badge + '">' + (STATUS_TEXT[tx.status] || tx.status) + '</span>';
+      }
+      if (els.invStatusIcon) {
+        els.invStatusIcon.className = 'status-icon ' + st.icon;
+        els.invStatusIcon.innerHTML = statusIconSvg(st.icon);
+      }
+      if (els.invStatusText) els.invStatusText.textContent = STATUS_TEXT[tx.status] || tx.status;
+
+      if (els.fsQrAmount) els.fsQrAmount.textContent = formatRupiah(tx.amount);
+      if (els.fsQrId) els.fsQrId.textContent = tx.paymentId + ' · ' + tx.methodName;
+    } else {
+      if (els.invStatusIcon) {
+        els.invStatusIcon.className = 'status-icon muted';
+        els.invStatusIcon.innerHTML = statusIconSvg('muted');
+      }
+      if (els.invStatusText) els.invStatusText.textContent = 'NO ACTIVE PAYMENT';
+    }
+
+    tickCountdown();
+  }
+
+  function animateNumber(el, target, formatter) {
+    if (!el) return;
+    const from = Number(el.getAttribute('data-value') || 0);
+    const to = Number(target) || 0;
+
+    if (document.body.classList.contains('no-anim') || !window.requestAnimationFrame) {
+      el.textContent = formatter(to);
+      el.setAttribute('data-value', String(to));
+      return;
+    }
+
+    const duration = 620;
+    const start = performance.now();
+
+    function step(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const value = from + (to - from) * eased;
+      el.textContent = formatter(value);
+      if (p < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        el.textContent = formatter(to);
+        el.setAttribute('data-value', String(to));
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  function updateStats() {
+    const now = Date.now();
+    const todays = state.history.filter(function (t) { return isSameDay(t.createdAt, now); });
+
+    let revenue = 0;
+    let successCount = 0;
+    todays.forEach(function (t) {
+      if (t.status === 'SUCCESS') {
+        revenue += Number(t.amount) || 0;
+        successCount++;
+      }
+    });
+
+    const totalCount = state.history.length;
+    const totalSuccess = state.history.filter(function (t) { return t.status === 'SUCCESS'; }).length;
+    const rate = totalCount > 0 ? Math.round((totalSuccess / totalCount) * 100) : 0;
+
+    const active = state.history.filter(function (t) {
+      return t.status === 'PENDING' || t.status === 'PROCESSING';
+    }).length;
+
+    animateNumber(els.statTx, todays.length, function (v) { return formatNumber(Math.round(v)); });
+    animateNumber(els.statRev, revenue, function (v) { return formatRupiah(v); });
+    animateNumber(els.statRate, rate, function (v) { return Math.round(v) + '%'; });
+    animateNumber(els.statActive, active, function (v) { return formatNumber(Math.round(v)); });
+  }
+
+  function renderHistory() {
+    if (!els.histList) return;
+    const q = (els.histSearch && els.histSearch.value ? els.histSearch.value : '').toLowerCase().trim();
+    const filter = els.histFilter ? els.histFilter.value : 'ALL';
+
+    const list = state.history.filter(function (t) {
+      if (filter !== 'ALL' && t.status !== filter) return false;
+      if (!q) return true;
+      const haystack = (String(t.paymentId) + ' ' + String(t.invoiceId) + ' ' + String(t.id) + ' ' + String(t.methodName)).toLowerCase();
+      return haystack.indexOf(q) !== -1;
+    });
+
+    if (!list.length) {
+      els.histList.innerHTML = '<div class="empty"><b>Belum ada transaksi</b>Buat pembayaran  untuk melihat riwayat di sini.</div>';
+      return;
+    }
+
+    const html = list.map(function (t) {
+      const st = STATUS_STYLE[t.status] || STATUS_STYLE.PENDING;
+      const color = t.methodColor || '#5b6bff';
+      return '<div class="hist-item" data-txid="' + escapeHtml(t.id) + '">' +
+        '<div class="hist-icon" style="--mc:' + escapeHtml(color) + ';background:' + escapeHtml(color) + '">' + escapeHtml(t.methodTag || 'XT') + '</div>' +
+        '<div class="hist-main">' +
+          '<div class="hist-id">' + escapeHtml(t.paymentId) + '</div>' +
+          '<div class="hist-meta">' + escapeHtml(t.methodName) + ' · ' + escapeHtml(formatTimeOnly(t.createdAt)) + ' · ' + escapeHtml(formatDateOnly(t.createdAt)) + '</div>' +
+        '</div>' +
+        '<div class="hist-right">' +
+          '<div class="hist-amt">' + escapeHtml(formatRupiah(t.amount)) + '</div>' +
+          '<span class="badge ' + st.badge + '">' + st.label + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    els.histList.innerHTML = html;
+
+    $$('.hist-item', els.histList).forEach(function (item) {
+      item.addEventListener('click', function () {
+        const id = item.getAttribute('data-txid');
+        const tx = state.history.filter(function (t) { return t.id === id; })[0];
+        if (!tx) return;
+        openInvoiceFor(tx);
+      });
+    });
+  }
+
+  function refreshAll() {
+    updateStats();
+    renderHistory();
+    updateTransactionUI();
+  }
+
+  /* ----------------------------------------------------------
+     18. CLIPBOARD / SHARE / DOWNLOAD
+     ---------------------------------------------------------- */
+  function copyText(text, successMsg) {
+    const value = String(text == null ? '' : text);
+    if (!value) {
+      toast('Tidak ada data untuk disalin.', 'warn');
+      return;
+    }
+
+    function fallbackCopy() {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = value;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, value.length);
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) toast(successMsg || 'Berhasil disalin ke clipboard.', 'success');
+        else toast('Gagal menyalin. Salin manual: ' + value.slice(0, 40), 'warn');
+      } catch (e) {
+        toast('Clipboard tidak tersedia. Salin manual.', 'warn');
+      }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(function () {
+        toast(successMsg || 'Berhasil disalin ke clipboard.', 'success');
+      }).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function canvasToBlob(canvas, cb) {
+    try {
+      if (canvas.toBlob) {
+        canvas.toBlob(function (blob) { cb(blob); }, 'image/png');
+      } else {
+        const dataUrl = canvas.toDataURL('image/png');
+        const parts = dataUrl.split(',');
+        const bin = atob(parts[1]);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        cb(new Blob([arr], { type: 'image/png' }));
+      }
+    } catch (e) { cb(null); }
+  }
+
+  function downloadQR() {
+    if (!state.tx) {
+      toast('Buat pembayaran terlebih dahulu.', 'warn');
+      return;
+    }
+    try {
+      const size = 1024;
+      const tmp = document.createElement('canvas');
+      tmp.width = size;
+      tmp.height = size;
+      drawQR(tmp, JSON.stringify({
+        merchant: state.tx.merchant,
+        paymentId: state.tx.paymentId,
+        amount: state.tx.amount,
+        currency: state.tx.currency,
+        timestamp: new Date(state.tx.createdAt).toISOString(),
+        status: state.tx.status,
+        provider: state.tx.provider
+      }));
+
+      const dataUrl = tmp.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = state.tx.paymentId + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast('QR berhasil diunduh (✓).', 'success');
+    } catch (e) {
+      // Fallback: buka di tab baru
+      try {
+        const dataUrl = els.qrCanvas.toDataURL('image/png');
+        const w = window.open('', '_blank');
+        if (w) {
+          w.document.write('<title>XTAN PAYMENT QR</title><body style="margin:0;background:#05070f;display:grid;place-items:center;height:100vh"><img src="' + dataUrl + '" style="max-width:90vw;border-radius:20px"></body>');
+          w.document.close();
+        } else {
+          toast('Download tidak didukung browser ini.', 'warn');
+        }
+      } catch (e2) {
+        toast('Download QR gagal.', 'err');
+      }
+    }
+  }
+
+  function shareQR() {
+    if (!state.tx) {
+      toast('Buat pembayaran terlebih dahulu.', 'warn');
+      return;
+    }
+    const tx = state.tx;
+    const text = 'XTAN PAYMENT (✓)\n' +
+                 'Payment ID: ' + tx.paymentId + '\n' +
+                 'Amount: ' + formatRupiah(tx.amount) + '\n' +
+                 'Method: ' + tx.methodName + '\n' +
+                 'Status: ' + tx.status + '\n' +
+                 'Tru interface — not connected to a real payment processor.';
+
+    canvasToBlob(els.qrCanvas, function (blob) {
+      try {
+        if (blob && window.File && navigator.canShare) {
+          const file = new File([blob], tx.paymentId + '.png', { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: 'XTAN PAYMENT', text: text }).catch(function () {
+              copyText(text, 'Detail pembayaran disalin (share dibatalkan).');
+            });
+            return;
+          }
+        }
+      } catch (e) { /* fallback di bawah */ }
+
+      if (navigator.share) {
+        navigator.share({ title: 'XTAN PAYMENT', text: text }).catch(function () {
+          copyText(text, 'Detail pembayaran disalin (share dibatalkan).');
+        });
+      } else {
+        copyText(text, 'Web Share tidak tersedia — detail pembayaran disalin.');
+      }
+    });
+  }
+
+  function shareInvoice() {
+    if (!state.tx) {
+      toast('Tidak ada invoice aktif.', 'warn');
+      return;
+    }
+    const tx = state.tx;
+    const text = 'INVOICE XTAN PAYMENT (✓)\n' +
+                 'Invoice ID: ' + tx.invoiceId + '\n' +
+                 'Transaction ID: ' + tx.id + '\n' +
+                 'Payment ID: ' + tx.paymentId + '\n' +
+                 'Merchant: ' + tx.merchant + '\n' +
+                 'Amount: ' + formatRupiah(tx.amount) + '\n' +
+                 'Method: ' + tx.methodName + '\n' +
+                 'Status: ' + tx.status + '\n' +
+                 'True interface — not connected to a real payment processor.';
+
+    if (navigator.share) {
+      navigator.share({ title: 'Invoice XTAN PAYMENT', text: text }).catch(function () {
+        copyText(text, 'Invoice disalin ke clipboard.');
+      });
+    } else {
+      copyText(text, 'Web Share tidak tersedia — invoice disalin.');
+    }
+  }
+
+  /* ----------------------------------------------------------
+     19. INVOICE
+     ---------------------------------------------------------- */
+  function openInvoiceFor(tx) {
+    state.tx = tx;
+    generatePaymentQR(tx);
+    updateTransactionUI();
+    if (tx.status === 'PENDING') startCountdown();
+    else stopCountdown();
+    openModal('invoiceModal');
+  }
+
+  function bindInvoiceButtons() {
+    const btnCopyInvoice = $('#invCopyInvoice');
+    if (btnCopyInvoice) btnCopyInvoice.addEventListener('click', function () {
+      if (!state.tx) return;
+      copyText(state.tx.invoiceId, 'Invoice ID disalin.');
+    });
+
+    const btnCopyPayment = $('#invCopyPayment');
+    if (btnCopyPayment) btnCopyPayment.addEventListener('click', function () {
+      if (!state.tx) return;
+      copyText(state.tx.paymentId, 'Payment ID disalin.');
+    });
+
+    const btnDownload = $('#invDownload');
+    if (btnDownload) btnDownload.addEventListener('click', downloadQR);
+
+    const btnShare = $('#invShare');
+    if (btnShare) btnShare.addEventListener('click', shareInvoice);
+
+    const btnCheck = $('#invCheck');
+    if (btnCheck) btnCheck.addEventListener('click', simulatePayment);
+
+    const btnCancel = $('#invCancel');
+    if (btnCancel) btnCancel.addEventListener('click', function () {
+      cancelTransaction();
+    });
+  }
+
+  /* ----------------------------------------------------------
+     20. AMOUNT INPUT
+     ---------------------------------------------------------- */
+  const PRESETS = [10000, 25000, 50000, 100000, 250000, 500000];
+
+  function renderPresets() {
+    if (!els.presets) return;
+    els.presets.innerHTML = PRESETS.map(function (v) {
+      return '<button type="button" class="preset" data-amount="' + v + '">' + formatRupiah(v) + '</button>';
+    }).join('');
+
+    $$('.preset', els.presets).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const val = parseInt(btn.getAttribute('data-amount'), 10) || 0;
+        setAmount(val);
+      });
+    });
+  }
+
+  function setAmount(value) {
+    const digits = String(value).replace(/\D/g, '').slice(0, 9);
+    const num = digits ? parseInt(digits, 10) : 0;
+    state.amount = num;
+    if (els.amountInput) {
+      els.amountInput.value = num > 0 ? formatNumber(num) : '';
+    }
+    haptic(8);
+    beep(680, 0.05);
+  }
+
+  function bindAmountInput() {
+    if (!els.amountInput) return;
+    els.amountInput.addEventListener('input', function () {
+      const digits = els.amountInput.value.replace(/\D/g, '').slice(0, 9);
+      const num = digits ? parseInt(digits, 10) : 0;
+      state.amount = num;
+      els.amountInput.value = num > 0 ? formatNumber(num) : '';
+    });
+    els.amountInput.addEventListener('blur', function () {
+      if (state.amount > 10000000) {
+        setAmount(10000000);
+        toast('Nominal maksimal Rp10.000.000.', 'warn');
+      }
+    });
+  }
+
+  /* ----------------------------------------------------------
+     21. RENDER METHODS
+     ---------------------------------------------------------- */
+  function renderMethods() {
+    if (!els.methods) return;
+    els.methods.innerHTML = METHODS.map(function (m) {
+      return '<button type="button" class="method' + (m.id === state.method ? ' active' : '') + '" data-method="' + m.id + '" style="--mc:' + m.color + '">' +
+        '<span class="method-badge">' + escapeHtml(m.tag) + '</span>' +
+        '<span class="method-name">' + escapeHtml(m.name) + '</span>' +
+      '</button>';
+    }).join('');
+
+    $$('.method', els.methods).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        selectPaymentMethod(btn.getAttribute('data-method'));
+      });
+    });
+
+    selectPaymentMethod(state.method);
+  }
+
+  /* ----------------------------------------------------------
+     22. CREATE PAYMENT
+     ---------------------------------------------------------- */
+  function handleCreatePayment() {
+    const amount = Number(state.amount) || 0;
+
+    if (!amount || amount < 1000) {
+      toast('Nominal minimal Rp1.000.', 'warn', 'Nominal Tidak Valid');
+      haptic(30);
+      return;
+    }
+    if (amount > 10000000) {
+      toast('Nominal maksimal Rp10.000.000.', 'warn', 'Nominal Tidak Valid');
+      haptic(30);
+      return;
+    }
+
+    const method = getMethod(state.method);
+    const tx = createTransaction(amount, method.id);
+
+    state.tx = tx;
+    saveTransaction(tx);
+    generatePaymentQR(tx);
+    updateTransactionUI();
+    startCountdown();
+
+    notify('New Transaction', 'Transaksi ' + tx.paymentId + ' dibuat (' + formatRupiah(tx.amount) + ').', 'info');
+
+    openModal('invoiceModal');
+    beep(880, 0.1);
+    haptic(16);
+  }
+
+  function bindPaymentButtons() {
+    if (els.btnCreate) els.btnCreate.addEventListener('click', handleCreatePayment);
+    if (els.btnGenerate) els.btnGenerate.addEventListener('click', handleCreatePayment);
+
+    if (els.btnNewPayment) {
+      els.btnNewPayment.addEventListener('click', function () {
+        state.tx = null;
+        stopCountdown();
+        generatePaymentQR({ merchant: 'XTAN PAYMENT', paymentId: 'XTAN-PREVIEW', amount: 0, currency: 'IDR', createdAt: Date.now(), status: 'PENDING', provider: 'True' });
+        updateTransactionUI();
+        switchView('payment');
+        toast('Siap membuat pembayaran baru.', 'info');
+      });
+    }
+
+    if (els.btnCopyPayId) {
+      els.btnCopyPayId.addEventListener('click', function () {
+        if (!state.tx) return;
+        copyText(state.tx.paymentId, 'Payment ID disalin.');
+      });
+    }
+
+    if (els.btnDownloadQr) els.btnDownloadQr.addEventListener('click', downloadQR);
+    if (els.btnShareQr) els.btnShareQr.addEventListener('click', shareQR);
+
+    if (els.btnFullscreen) {
+      els.btnFullscreen.addEventListener('click', function () {
+        if (!state.tx) {
+          toast('Buat pembayaran terlebih dahulu.', 'warn');
+          return;
+        }
+        generatePaymentQR(state.tx);
+        openModal('qrModal');
+      });
+    }
+
+    if (els.histSearch) els.histSearch.addEventListener('input', renderHistory);
+    if (els.histFilter) els.histFilter.addEventListener('change', renderHistory);
+
+    if (els.btnClearHist) {
+      els.btnClearHist.addEventListener('click', function () {
+        if (!state.history.length) {
+          toast('Riwayat sudah kosong.', 'info');
+          return;
+        }
+        const ok = window.confirm('Hapus semua riwayat transaksi?');
+        if (!ok) return;
+        state.history = [];
+        Store.set(STORAGE_KEYS.history, []);
+        refreshAll();
+        toast('Riwayat transaksi dihapus.', 'success');
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------
+     23. CUSTOMER SERVICE CHAT ()
+     ---------------------------------------------------------- */
+  const CS_REPLIES = {
+    'cara pembayaran': 'Caranya mudah: masukkan nominal, pilih metode pembayaran, lalu tekan CREATE PAYMENT. QR  akan muncul dan bisa Anda scan (simulasi).',
+    'cek transaksi': 'Semua transaksi  tersimpan di bagian Transaction History. Anda bisa mencari berdasarkan Payment ID atau memfilter status.',
+    'masalah qr': 'Jika QR tidak muncul, coba refresh halaman atau tekan GENERATE PAYMENT ulang. Pastikan browser mendukung Canvas.',
+    'hubungi admin': 'Anda bisa menghubungi admin melalui tombol CONTACT ADMIN atau kanal media resmi kami.',
+    'payment problem': 'Pastikan nominal antara Rp1.000 sampai Rp10.000.000 dan metode pembayaran sudah dipilih.',
+    'qr problem': 'Masalah QR biasanya karena canvas diblokir browser. Coba matikan mode hemat data atau gunakan browser lain.',
+    'transaction problem': 'Anda dapat membatalkan transaksi pending lewat tombol CANCEL PAYMENT di invoice.',
+    'general question': 'XTAN PAYMENT ini adalah  interface. Semua transaksi bersifat simulasi dan tidak memproses uang nyata.',
+    'default': 'Terima kasih atas pesannya! Ini adalah CS . Untuk bantuan lebih lanjut silakan gunakan tombol CONTACT ADMIN.'
+  };
+
+  function addChatMessage(text, who) {
+    if (!els.chatBody) return;
+    const div = document.createElement('div');
+    div.className = 'msg ' + (who === 'user' ? 'user' : 'bot');
+    div.textContent = text;
+    els.chatBody.appendChild(div);
+    els.chatBody.scrollTop = els.chatBody.scrollHeight;
+  }
+
+  function addTyping() {
+    if (!els.chatBody) return null;
+    const div = document.createElement('div');
+    div.className = 'msg bot typing';
+    div.innerHTML = '<i></i><i></i><i></i>';
+    els.chatBody.appendChild(div);
+    els.chatBody.scrollTop = els.chatBody.scrollHeight;
+    return div;
+  }
+
+  function botReply(userText) {
+    const typing = addTyping();
+    const key = String(userText || '').toLowerCase().trim();
+    let reply = CS_REPLIES['default'];
+
+    for (const k in CS_REPLIES) {
+      if (k !== 'default' && key.indexOf(k) !== -1) {
+        reply = CS_REPLIES[k];
+        break;
+      }
+    }
+
+    setTimeout(function () {
+      if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+      addChatMessage(reply, 'bot');
+    }, 700 + Math.random() * 500);
+  }
+
+  function sendChat(text) {
+    const value = String(text || '').trim();
+    if (!value) return;
+    addChatMessage(value, 'user');
+    if (els.chatInput) els.chatInput.value = '';
+    botReply(value);
+    haptic(10);
+    beep(720, 0.05);
+  }
+
+  function initChat() {
+    if (els.chatBody) {
+      addChatMessage('Halo! Selamat datang di XTAN PAYMENT CS.', 'bot');
+      addChatMessage('Saya asisten . Silakan pilih topik atau tulis pertanyaan Anda.', 'bot');
+    }
+
+    const sendBtn = $('#chatSend');
+    if (sendBtn) {
+      sendBtn.addEventListener('click', function () {
+        sendChat(els.chatInput ? els.chatInput.value : '');
+      });
+    }
+
+    if (els.chatInput) {
+      els.chatInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendChat(els.chatInput.value);
+        }
+      });
+    }
+
+    $$('#chatQuick .chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        sendChat(chip.getAttribute('data-chat'));
+      });
+    });
+
+    $$('#view-cs .chip[data-quick]').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        sendChat(chip.getAttribute('data-quick'));
+      });
+    });
+  }
+
+  function contactAdmin() {
+    if (!WHATSAPP_ADMIN || WHATSAPP_ADMIN === '#') {
+      toast('Kontak admin belum dikonfigurasi (True). Ganti WHATSAPP_ADMIN di dalam kode.', 'warn', 'Contact Admin');
+      return;
+    }
+    try {
+      window.open(WHATSAPP_ADMIN, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      toast('Tidak dapat membuka tautan admin.', 'err');
+    }
+  }
+
+  function bindCSButtons() {
+    const b1 = $('#btnContactAdmin');
+    if (b1) b1.addEventListener('click', contactAdmin);
+    const b2 = $('#btnAdmin2');
+    if (b2) b2.addEventListener('click', contactAdmin);
+  }
+
+  /* ----------------------------------------------------------
+     24. MEDIA / COMMUNITY
+     ---------------------------------------------------------- */
+  function openCommunity() {
+    try {
+      window.open(COMMUNITY_URL, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      toast('Tidak dapat membuka tautan komunitas.', 'err');
+    }
+  }
+
+  function bindMediaButtons() {
+    const ig = $('#btnIg');
+    if (ig) {
+      ig.addEventListener('click', function () {
+        try {
+          window.open(INSTAGRAM_URL, '_blank', 'noopener,noreferrer');
+        } catch (e) {
+          toast('Tidak dapat membuka Instagram.', 'err');
+        }
+      });
+    }
+
+    const comm2 = $('#btnCommunity2');
+    if (comm2) comm2.addEventListener('click', openCommunity);
+
+    const joinBtn = $('#joinCommunityBtn');
+    if (joinBtn) {
+      joinBtn.addEventListener('click', function () {
+        Store.set(STORAGE_KEYS.popupSeen, { seen: true, at: Date.now() });
+        closeModal('communityModal');
+        openCommunity();
+      });
+    }
+
+    $$('#communityModal [data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        Store.set(STORAGE_KEYS.popupSeen, { seen: true, at: Date.now() });
+      });
+    });
+  }
+
+  function maybeShowCommunityPopup() {
+    const seen = Store.get(STORAGE_KEYS.popupSeen, null);
+    if (seen && seen.seen) return;
+    setTimeout(function () {
+      openModal('communityModal');
+    }, 900);
+  }
+
+  /* ----------------------------------------------------------
+     25. INIT
+     ---------------------------------------------------------- */
+  function init() {
+    // Auto performance detection
+    if (state.settings.autoPerf) {
+      state.autoLowPerf = detectLowPerformance();
+    }
+
+    applySettings();
+    bindSettingsControls();
+
+    renderPresets();
+    bindAmountInput();
+    renderMethods();
+    bindPaymentButtons();
+    bindInvoiceButtons();
+    bindNavigation();
+    bindModals();
+    bindNotifPanel();
+    bindGlobalInteractions();
+    bindCSButtons();
+    bindMediaButtons();
+
+    initChat();
+    initAllTilt();
+
+    loadTransactionHistory();
+    renderNotifications();
+
+    // Default amount from settings
+    const defAmount = Number(state.settings.defaultAmount) || 0;
+    if (defAmount > 0) setAmount(defAmount);
+
+    // Preview QR
+    generatePaymentQR({
+      merchant: state.settings.merchantName || 'XTAN PAYMENT',
+      paymentId: 'XTAN-PREVIEW',
+      amount: 0,
+      currency: 'IDR',
+      createdAt: Date.now(),
+      status: 'PENDING',
+      provider: 'True'
+    });
+
+    updateTransactionUI();
+    refreshAll();
+
+    // Initial notification
+    if (!state.notifications.length) {
+      pushNotification('System Online', 'XTAN PAYMENT berjalan normal. Semua transaksi bersifat simulasi.', 'info');
+    }
+
+    // Popup komunitas
+    maybeShowCommunityPopup();
+
+    // Prevent horizontal scroll safety
+    document.addEventListener('touchmove', function (e) {
+      // tidak melakukan apa pun — hanya memastikan passive handling tidak mengganggu
+    }, { passive: true });
+
+    console.log('%cXTAN PAYMENT', 'font-size:16px;font-weight:900;color:#22e0ff');
+    console.log('%c Payment Gateway — not connected to a real payment processor.', 'color:#8b98bd');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+</body>
+</html>
